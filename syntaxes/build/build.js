@@ -65,6 +65,6 @@ function updateGrammarVariables(grammar, variables) {
 }
 function buildGrammar() {
     var tsGrammar = getTsGrammar(function (grammarVariables) { return grammarVariables; });
-    fs.writeFileSync(file(Language.Etl, Extension.JsonEtl), tsGrammar);
+    fs.writeFileSync(file(Language.Etl, Extension.JsonEtl), JSON.stringify(tsGrammar, null, 4));
 }
 buildGrammar();

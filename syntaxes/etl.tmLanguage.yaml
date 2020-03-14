@@ -158,10 +158,10 @@ repository:
     # - include: '#run-declaration'
 
   protocol-declaration:
-    name: meta.class.etl
+    name: meta.module.etl
     begin: '\b(protocol)\b(?=\s+|/[/*])'
     beginCaptures:
-      '': { name: storage.type.class.etl }
+      '1': { name: storage.type.module.etl }
     end: (?<=\})
     patterns:
     - include: '#protocol-declaration-patterns'
@@ -171,7 +171,7 @@ repository:
     - include: '#comment'
     - match: '{{identifier}}'
       captures:
-        '0': { name: 'entity.name.type.class.etl' }
+        '0': { name: 'entity.name.type.module.etl' }
     - include: '#protocol-body'
 
   protocol-body:
@@ -183,6 +183,43 @@ repository:
       '0': { name: punctuation.definition.block.etl }
     patterns:
     - include: '#comment'
+    - include: '#protocol-element2-declaration'
+
+  protocol-element2-declaration:
+    patterns:
+    - name: meta.segment.declaration.etl
+      begin: '\b(segment)\b(?=\s+|/[/*])'
+      beginCaptures:
+        '1': { name: storage.type.class.etl }
+      end: (?<=\})
+      patterns:
+      - include: '#protocol-element2-declaration-patterns'
+
+  protocol-element2-declaration-patterns:
+    patterns:
+    - include: '#comment'
+    - match: '{{identifier}}'
+      captures:
+        '0': { name: 'entity.name.type.class.etl' }
+    - include: '#protocol-element2-body'
+
+  protocol-element2-body:
+    begin: \{
+    beginCaptures:
+      '0': { name: punctuation.definition.block.etl }
+    end: \}
+    endCaptures:
+      '0': { name: punctuation.definition.block.etl }
+    patterns:
+    - include: '#comment'
+    - include: '#element2-property-setting'
+    
+  element2-property-setting: 
+    patterns:
+    - include: '#comment'
+    
+
+    
 
   comment:
     patterns:

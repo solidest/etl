@@ -77,7 +77,7 @@ function updateGrammarVariables(grammar: TmGrammar, variables: MapLike<string>) 
 function buildGrammar() {
     const tsGrammar = getTsGrammar(grammarVariables => grammarVariables);
 
-    fs.writeFileSync(file(Language.Etl, Extension.JsonEtl), tsGrammar);
+    fs.writeFileSync(file(Language.Etl, Extension.JsonEtl), JSON.stringify(tsGrammar, null, 4));
 
 }
 
