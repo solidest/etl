@@ -1,65 +1,186 @@
-# etl README
 
-This is the README for your extension "etl". After writing up a brief description, we recommend including the following sections.
+# ETL 嵌入式测试语言 ( Embedded Test Language )
 
-## Features
+## 简介
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+ETL 是用于嵌入式系统测试的程序语言，使用ETL可以开发嵌入式测试用例，以及对测试环境中使用的通信协议、设备接口、交联关系进行描述。
 
-For example if there is an image subfolder under your extension project workspace:
+## ETL 代码文件
 
-\!\[feature X\]\(images/feature-x.png\)
+ETL代码文件是扩展名为 `.etl` 的文本文件
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+ETL代码文件由若干个根级元素定义组成
 
-## Requirements
+### 代码文件引用
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+ETL代码文件可以相互引用
 
-## Extension Settings
+代码文件引用的语法为 `using ”代码文件“`
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+举例：引用同级目录下的代码文件 `src_1.etl`
 
-For example:
+> `using "./src_1.etl"`
 
-This extension contributes the following settings:
+### 函数包引用
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+使用其它程序语言开发的函数，可以通过引用函数包的方式在ETL代码文件中使用
 
-## Known Issues
+函数包引用语法为 `using 代码文件 as 函数包名`
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+ETL函数包可以使用以下程序语言定义的函数：
 
-## Release Notes
+- Python
+- Lua
+- .h 头文件声明的动态库导出函数
 
-Users appreciate release notes as you update your extension.
+举例：引用同级目录下的Python代码文件`src_a.py`，引用后的包名为`pkg_1`
 
-### 1.0.0
+> `using "./src_a.py" as pkg_1 `
 
-Initial release of ...
+## 元素
 
-### 1.0.1
+元素是ETL代码文件的直接组成单元
 
-Fixed issue #.
+### 元素定义语法
 
-### 1.1.0
+元素定义的语法为: `元素类型 元素名称 { ... }`
 
-Added features X, Y, and Z.
+举例：一个测试执行的定义 
 
------------------------------------------------------------------------------------------------------------
+> `run testcase_1 { ... }`
 
-## Working with Markdown
+举例：一个协议模版的定义 
 
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+> `protocol prot_1 { ... }`
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
+### 根级元素
 
-### For more information
+ETL代码文件的根级元素包括以下类型：
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+- run：用于定义一个测试执行
+- protocol：用于定义一个协议模版
+- device：用于定义一个设备描述
+- join：用于定义一个设备链接方案
+- panel：用于定义一个可视化监控面板
 
-**Enjoy!**
+### 二级元素
+
+二级元素定义只能出现在根级元素定义内部
+
+不同类型的根级元素内，可用的二级元素类型不同
+
+举例：协议 `prot_1` ，由一个协议段 `seg_1` 组成
+
+> ` prototcol prot_1 { segment seg_1 { ... } } `
+
+## 元素属性
+
+每种元素都具有多个属性
+
+元素属性分为固定属性和自定义属性两种
+
+### 元素属性设置
+
+元素属性赋值语法为： ` 属性名称: 属性值 `
+
+多个元素属性连续赋值时使用逗号分隔，最后一个属性赋值后面的逗号可以省略
+
+举例：设置协议段 seg_1 的解析属性为32位整型解析
+
+> ` segment seg_1 { parse: "int32", ... }`
+
+### 自定义属性和固定属性
+
+可以由开发人员定制的元素属性称为自定义属性
+
+可自定义属性的元素有：
+
+- `run` 内定义的二级元素
+
+- `package` 内定义的二级元素
+
+其它元素属性均为固定属性，属性名称不可以定制
+
+### 可变属性值与不可变属性值
+
+可以在运行时修改属性值的元素有：
+
+- `run` 内定义的二级元素 `vars`
+- `panel` 内定义的二级元素
+
+其它元素属性值只能在元素定义时进行设置
+
+## 数据类型
+
+ETL拥有动态类型，相同的变量可用作不同的类型
+
+### 值类型
+
+ETL中的值类型包括:
+
+- `string` 字符串
+- `number` 数字
+- `bool` 布尔
+- `null` 空
+
+### 引用类型
+
+ETL 中的引用类型包括：
+
+- `object` 对象
+- `function` 函数
+- `array` 数组
+
+### 变量、常量与字面量
+
+### 变量
+
+- let
+
+### 常量
+
+- 数字
+
+- 字符串
+
+### 字面量
+
+- object
+
+## 控制语句
+
+### 协议定义控制语句
+
+- oneof
+- when
+
+### 程序控制语句
+
+- if else 
+- while
+- for
+
+## 运算符
+
+
+## 表达式
+
+### 计算表达式
+
+### 判断表达式
+
+## API
+
+- 协议定义API
+
+- 运行时API
+
+
+
+
+
+
+
+
+
+

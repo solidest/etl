@@ -1,0 +1,43 @@
+{
+  "name": "etl",
+  "displayName": "Embedded Test Language",
+  "description": "ETL tooling for VS Code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.43.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "scripts": {
+    "build:grammar": "tsc -b syntaxes/build -v && node syntaxes/build/build.js"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "etl",
+        "aliases": [
+          "ETL",
+          "etl",
+          "Etl"
+        ],
+        "extensions": [
+          ".etl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "etl",
+        "scopeName": "source.etl",
+        "path": "./syntaxes/etl.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "js-yaml": "^3.13.1",
+    "@types/js-yaml": "^3.12.2",
+    "@types/node": "^13.9.1"
+  }
+}
