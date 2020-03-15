@@ -72,9 +72,6 @@ panel panel_1 {
     }
 }
 
-package pkg_x {
-
-}
 
 using './pkg_1.py' as pkg1
 using './pcg_3.h' as pkg3
@@ -95,14 +92,14 @@ run run_1 {
     }
 
     watch data_1 {
-        v1 : function(new_value, old_value) {
+        data_1.v1 : function(new_value, old_value) {
 
         } 
     }
 
     mapping map_1 {
-        panel1.widget1.value: self.data_1.v1,
-        panel2.widget2.value: self.data_1.v2,
+        panel1.widget1.value: this.data_1.v1,
+        panel2.widget2.value: this.data_1.v2,
     }
 
     play pl_1 {

@@ -11,13 +11,87 @@
         }
     ],
     "repository": {
+        "script-block": {
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#var-declaration"
+                }
+            ]
+        },
+        "var-declaration": {
+            "name": "meta.var.etl",
+            "begin": "\\b(let)\\s+([_$[:alpha:]][_$[:alnum:]]*)\\s*(=)",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.etl"
+                },
+                "2": {
+                    "name": "variable.define.etl"
+                },
+                "3": {
+                    "name": "keyword.operator.assignment.etl"
+                }
+            },
+            "end": ";",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.terminator.statement.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#numeric-literal"
+                },
+                {
+                    "include": "#boolean-literal"
+                },
+                {
+                    "include": "#array-literal"
+                },
+                {
+                    "include": "#object-literal"
+                }
+            ]
+        },
         "statements": {
             "patterns": [
                 {
                     "include": "#comment"
                 },
                 {
+                    "include": "#using-file"
+                },
+                {
                     "include": "#top-declaration"
+                }
+            ]
+        },
+        "using-file": {
+            "name": "meta.import.etl",
+            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(\\s+)?\\b(using)(?:\\s+)",
+            "beginCaptures": {
+                "2": {
+                    "name": "keyword.control.using.etl"
+                }
+            },
+            "end": "\\s+(as)\\s+([_$[:alpha:]][_$[:alnum:]]*)",
+            "endCaptures": {
+                "1": {
+                    "name": "keyword.control.as.etl"
+                },
+                "2": {
+                    "name": "entity.name.type.package.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#string"
                 }
             ]
         },
@@ -389,11 +463,7 @@
                     "include": "#function-parameters"
                 },
                 {
-                    "include": "#decl-block"
-                },
-                {
-                    "name": "keyword.generator.asterisk.etl",
-                    "match": "\\*"
+                    "include": "#script-block"
                 }
             ]
         },

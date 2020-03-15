@@ -1,0 +1,71 @@
+
+using 'aaa/sss.etl' as ddf
+
+
+protocol prot_1 {
+    segment seg_1 { parser: 'int8 > &', auto: 1233.999, aab: true, ddd.fff: null, ccc:len(1, 'aaa', this.a) + this.aaa(dfdf), arr: ['aa', abb, 123, df ] }
+    segment seg_2 { abd.adf: 
+        {pack: 'aaa', unpack: true /*ss*/}, 
+        afd: [asdb, 'adf', {a:'bb'}],
+        auto: 'aaaa', fff: this.adf*200+20, len: seg_1.val/78 & fdjkl, len :df ||false,  }
+    segment seg_3 {
+        parser: {
+            pack: function(a,b) {
+                //asdf
+                /*
+
+                */
+            },
+            unpack: function() {
+
+            },
+            a: ['a', 1, 4, 23.88 'df', adf.sdf]
+        },
+        adf: 'dsf',
+        ss: 123,
+        df: function() {
+            let f = 1;
+            let f = 'aaaa';
+            let a = 0xFFAA;
+            let a = false;
+            let ddd = true;
+            let arr = ['aaa', 'aa', 123, 'aaa', {a: 999}];
+            let ass = {a:'bd', df:333, a: [{}, {aa:'sss'}]};
+            let asf = {};
+
+        }
+    }
+
+    oneof(a>b && this.a<0){
+        segments aaa {
+            segment {
+
+            }
+        }
+        segment {
+
+        }
+    }
+    
+    when(a>b) {
+        oneof ('a'==b) {
+            segment ss {
+                a: bd,
+                adf: 'dsaf'
+            }
+        }
+    }
+    segment _1 {}
+    segment _2 {}
+    segments aaa {
+        segment seg {
+            
+        },
+
+        segments ddd {
+            segment a {
+                
+            }
+        }
+    }
+}

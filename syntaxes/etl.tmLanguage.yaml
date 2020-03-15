@@ -139,24 +139,55 @@ patterns:
 - include: '#statements'
 
 repository:
+ 
+  script-block:
+    patterns:
+    - include: '#comment'
+    - include: '#var-declaration' 
+
+  var-declaration:
+    name: meta.var.etl
+    begin: '\b(let)\s+({{identifier}})\s*(=)'
+    beginCaptures:
+      '1': { name: storage.type.etl }
+      '2': { name: 'variable.define.etl' }
+      '3': { name: keyword.operator.assignment.etl }
+    end: ;
+    endCaptures:
+      '0': { name: punctuation.terminator.statement.etl }
+    patterns:
+    - include: '#string'
+    - include: '#numeric-literal'
+    - include: '#boolean-literal'
+    - include: '#array-literal' 
+    - include: '#object-literal'
+
   statements:
     patterns:
     - include: '#comment'
+    - include: '#using-file'
     - include: '#top-declaration'
-    #- include: '#control-statement'
-    # - include: '#after-operator-block-as-object-literal'
-    # - include: '#decl-block'
-    # - include: '#label'
-    # - include: '#expression'
-    # - include: '#punctuation-semicolon'
-    # - include: '#string'
 
-  #top element declaration
+  # using file
+  using-file:
+    name: meta.import.etl
+    begin: '{{startOfDeclaration}}\b(using)(?:\s+)'
+    beginCaptures:
+      '2': { name: keyword.control.using.etl }
+    end: '\s+(as)\s+({{identifier}})'
+    endCaptures:
+      '1': { name: keyword.control.as.etl }
+      '2': { name: entity.name.type.package.etl }
+    patterns:
+    - include: '#string'
+
+  # top element declaration
   top-declaration:
     patterns:
     - include: '#protocol-declaration'
     # - include: '#run-declaration'
 
+  # protocol
   protocol-declaration:
     name: meta.module.etl
     begin: '\b(protocol)\b(?=\s+|/[/*])'
@@ -343,9 +374,7 @@ repository:
     patterns:
     - include: '#comment'
     - include: '#function-parameters'
-    - include: '#decl-block'
-    - name: keyword.generator.asterisk.etl
-      match: \*
+    - include: '#script-block'
 
   function-parameters:
     name: meta.parameters.etl
