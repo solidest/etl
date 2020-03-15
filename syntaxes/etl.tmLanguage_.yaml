@@ -183,11 +183,9 @@ repository:
       '0': { name: punctuation.definition.block.etl }
     patterns:
     - include: '#comment'
-    - include: '#protocol-segment-declaration'
-    - include: '#protocol-segments-declaration'
-    - include: '#protocol-case-declaration'
+    - include: '#protocol-element2-declaration'
 
-  protocol-segment-declaration:
+  protocol-element2-declaration:
     patterns:
     - name: meta.segment.declaration.etl
       begin: '\b(segment)\b(?=\s+|/[/*])'
@@ -195,49 +193,15 @@ repository:
         '1': { name: storage.type.class.etl }
       end: (?<=\})
       patterns:
-      - include: '#protocol-segment-declaration-patterns'
+      - include: '#protocol-element2-declaration-patterns'
 
-  protocol-segment-declaration-patterns:
+  protocol-element2-declaration-patterns:
     patterns:
     - include: '#comment'
     - match: '{{identifier}}'
       captures:
         '0': { name: entity.name.type.class.etl }
     - include: '#object-literal'
-
-  protocol-segments-declaration:
-    patterns:
-    - name: meta.segment.declaration.etl
-      begin: '\b(segments)\b(?=\s+|/[/*])'
-      beginCaptures:
-        '1': { name: storage.type.class.etl }
-      end: (?<=\})
-      patterns:
-      - include: '#protocol-segments-declaration-patterns'
-
-  protocol-segments-declaration-patterns:
-    patterns:
-    - include: '#comment'
-    - match: '{{identifier}}'
-      captures:
-        '0': { name: entity.name.type.class.etl }
-    - include: '#protocol-body'
-
-  protocol-case-declaration:
-    patterns:
-    - name: meta.segment.declaration.etl
-      begin: '\b((oneof)|(when))\b(?=\s+|\()'
-      beginCaptures:
-        '1': { name: keyword.control.conditional.etl }
-      end: (?<=\})
-      patterns:
-      - include: '#protocol-case-declaration-patterns'
-
-  protocol-case-declaration-patterns:
-    patterns:
-    - include: '#comment'
-    - include: '#paren-expression'
-    - include: '#protocol-body'
 
   object-literal:
     name: meta.objectliteral.etl
@@ -254,8 +218,14 @@ repository:
     patterns:
     - name: meta.object.member.etl meta.object-literal.key.etl
       match: ({{identifier}}(.{{identifier}})*[\s]*:)
+    
     - name: meta.object.member.etl
       patterns:
+      # - include: '#comment'
+      # - include: '#boolean-literal'
+      # - include: '#null-literal'
+      # - include: '#this-literal'
+      # - include: '#numeric-literal'
       - include: '#expression'
     
   expression:
@@ -292,6 +262,7 @@ repository:
     # vars
     - name: variable.other.readwrite.etl
       match: '{{identifier}}'
+
   
   object-identifiers:
     patterns:
@@ -323,89 +294,11 @@ repository:
     patterns:
     - include: '#string'
     - include: '#comment'
-    - include: '#function-expression'
     - include: '#object-literal'
     - include: '#expression-operators'
     - include: '#function-call'
     - include: '#literal'
     - include: '#support-objects'
-
-  function-expression:
-    name: meta.function.expression.etl
-    begin: '{{startOfIdentifier}}(function\b)\s*'
-    beginCaptures:
-      '1': { name: storage.type.function.etl }
-    end: (?<=\})
-    patterns:
-    - include: '#function-body'
-
-  function-body:
-    patterns:
-    - include: '#comment'
-    - include: '#function-parameters'
-    - include: '#decl-block'
-    - name: keyword.generator.asterisk.etl
-      match: \*
-
-  function-parameters:
-    name: meta.parameters.etl
-    begin: \(
-    beginCaptures:
-      '0': { name: punctuation.definition.parameters.begin.etl }
-    end: \)
-    endCaptures:
-      '0': { name: punctuation.definition.parameters.end.etl }
-    patterns:
-    - include: '#function-parameters-body'
-
-  # When updating this, also update the expression-inside-possibly-arrow-parens where this is inlined so that parameter-name can also be inlined
-  function-parameters-body:
-    patterns:
-    - include: '#comment'
-    - include: '#string'
-    - include: '#parameter-name'
-    - include: '#variable-initializer'
-    - name: punctuation.separator.parameter.etl
-      match: ','
-
-  parameter-name:
-    patterns:
-    - match: '{{startOfIdentifier}}(public|protected|private|readonly)\s+(?=(public|protected|private|readonly)\s+)'
-      captures:
-        '1': { name: storage.modifier.etl }
-    - match: |-
-        (?x)(?:{{startOfIdentifier}}(public|private|protected|readonly)\s+)?(?:(\.\.\.)\s*)?(?<!=|:){{startOfIdentifier}}(?:(this)|({{identifier}})){{endOfIdentifier}}\s*(\??)(?={{functionLikeAssignmentOrType}})
-      captures:
-        '1': { name: storage.modifier.etl }
-        '2': { name: keyword.operator.rest.etl }
-        '3': { name: entity.name.function.etl variable.language.this.etl }
-        '4': { name: entity.name.function.etl }
-        '5': { name: keyword.operator.optional.etl }
-    - match: |-
-        (?x)(?:{{startOfIdentifier}}(public|private|protected|readonly)\s+)?(?:(\.\.\.)\s*)?(?<!=|:){{startOfIdentifier}}(?:(this)|({{identifier}})){{endOfIdentifier}}\s*(\??)
-      captures:
-        '1': { name: storage.modifier.etl }
-        '2': { name: keyword.operator.rest.etl }
-        '3': { name: variable.parameter.etl variable.language.this.etl }
-        '4': { name: variable.parameter.etl }
-        '5': { name: keyword.operator.optional.etl }
-    
-  variable-initializer:
-    patterns:
-    # if it is assignment with expression on same line, use end of line as end of scope
-    - begin: (?<!=|!)(=)(?!=)(?=\s*\S)(?!\s*.*=>\s*$)
-      beginCaptures:
-        '1': { name: keyword.operator.assignment.etl }
-      end: (?=$|^|[,);}\]]|({{startOfIdentifier}}(of|in)\s+))
-      patterns:
-      - include: '#expression'
-    # if the expression doesnt start on same line do not use end of line as end of unless the complete line is blank
-    - begin: (?<!=|!)(=)(?!=)
-      beginCaptures:
-        '1': { name: keyword.operator.assignment.etl }
-      end: (?=[,);}\]]|({{startOfIdentifier}}(of|in)\s+))|(?=^\s*$)|(?<=\S)(?<!=)(?=\s*$)
-      patterns:
-        - include: '#expression'
 
   expressionPunctuations:
     patterns:
@@ -757,7 +650,7 @@ repository:
       match: '{{startOfIdentifier}}instanceof{{endOfIdentifier}}'
     - name: keyword.operator.new.etl
       match: '{{startOfIdentifier}}new{{endOfIdentifier}}'
-    # - include: '#typeof-operator'
+    - include: '#typeof-operator'
     - name: keyword.operator.expression.void.etl
       match: '{{startOfIdentifier}}void{{endOfIdentifier}}'
       #handle as operator specifically to be recognized only if it is 'as' followed by space
@@ -765,6 +658,12 @@ repository:
       captures:
         '1': { name: keyword.control.as.etl }
         '2': { name: storage.modifier.etl }
+    - begin: '{{startOfIdentifier}}(as)\s+'
+      beginCaptures:
+        '1': { name: keyword.control.as.etl }
+      end: (?=$|^|[;,:})\]]|\|\||\&\&|({{startOfIdentifier}}(as)\s+)|(\s+\<))
+      patterns:
+      - include: '#type'
     - name: keyword.operator.spread.etl
       match: \.\.\.
     - name: keyword.operator.assignment.compound.etl

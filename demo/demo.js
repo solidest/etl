@@ -105,7 +105,7 @@ run run_1 {
         panel2.widget2.value: self.data_1.v2,
     }
 
-    methods mth_1 {
+    play pl_1 {
         entry: function(data, option) {
             let local_v1 = 0
             let local_v2 = 'aaa'
@@ -139,6 +139,12 @@ run run_1 {
         fun_1: function(arg1, arg2) {
             return arg1 + arg2
         }        
+    }
+
+    play pl_2 {
+        entry: function(data, option) {
+            
+        }
     }
 
 
