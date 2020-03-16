@@ -27,6 +27,12 @@ protocol prot_1 {
         adf: 'dsf',
         ss: 123,
         df: function() {
+            dfs++;
+            fde += 20;
+            dsf ++;
+            if(fd) {
+                
+            }
             adf.dsf =df;
             fff.dsf.dsf= 223;
             this.a = 1000 + 20;
