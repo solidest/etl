@@ -3,6 +3,7 @@
 class c_1 {
 
     get abc() {
+        
         let c = {
             aaa.bbb: 12345,
             bbb: '12345',
@@ -19,6 +20,18 @@ class c_1 {
 
 class prot_1 {
     get abc() {
+        switch (key) {
+            case value:
+                
+                break;
+        
+            default:
+                break;
+        }
+
+        while(a>0) {
+            
+        }
         fadj.dsf(dflk);
         let b = 10;
         let f = function(a, b) {

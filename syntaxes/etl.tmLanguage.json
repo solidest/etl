@@ -11,10 +11,16 @@
         }
     ],
     "repository": {
-        "script-block": {
+        "scripts": {
             "patterns": [
                 {
                     "include": "#comment"
+                },
+                {
+                    "include": "#control-statement"
+                },
+                {
+                    "include": "#script-block"
                 },
                 {
                     "include": "#var-declaration"
@@ -65,7 +71,7 @@
         },
         "var-assignment": {
             "name": "meta.var.assignment.etl",
-            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))([_$[:alpha:]][_$[:alnum:]]*(\\.[_$[:alpha:]][_$[:alnum:]]*)*)(?=\\s+|\\=)",
+            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))([_$[:alpha:]][_$[:alnum:]]*(\\.[_$[:alpha:]][_$[:alnum:]]*)*)(?=(\\s+|\\=|\\+|-|\\.|\\n))",
             "beginCaptures": {
                 "1": {
                     "patterns": [
@@ -74,11 +80,11 @@
                             "match": "\\."
                         },
                         {
-                            "name": "variable.parameter.etl",
-                            "match": "[_$[:alpha:]][_$[:alnum:]]*"
+                            "include": "#this-literal"
                         },
                         {
-                            "include": "#this-literal"
+                            "name": "variable.parameter.etl",
+                            "match": "[_$[:alpha:]][_$[:alnum:]]*"
                         }
                     ]
                 },
@@ -94,7 +100,10 @@
             },
             "patterns": [
                 {
-                    "match": "\\s*(=)\\s*",
+                    "include": "#this-literal"
+                },
+                {
+                    "match": "\\s*(\\=|\\+=|\\-=|\\+\\+|--)\\s*",
                     "captures": {
                         "1": {
                             "name": "keyword.operator.assignment.etl"
@@ -108,6 +117,282 @@
                             "include": "#expression"
                         }
                     ]
+                }
+            ]
+        },
+        "control-statement": {
+            "patterns": [
+                {
+                    "include": "#switch-statement"
+                },
+                {
+                    "include": "#for-loop"
+                },
+                {
+                    "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(break|continue|goto)\\s+([_$[:alpha:]][_$[:alnum:]]*)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.loop.etl"
+                        },
+                        "2": {
+                            "name": "entity.name.label.etl"
+                        }
+                    }
+                },
+                {
+                    "name": "keyword.control.loop.etl",
+                    "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(break|continue|do)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+                },
+                {
+                    "name": "keyword.control.flow.etl",
+                    "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(return)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+                },
+                {
+                    "name": "keyword.control.switch.etl",
+                    "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(case|default|switch)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+                },
+                {
+                    "include": "#if-statement"
+                },
+                {
+                    "include": "#while-statement"
+                },
+                {
+                    "name": "keyword.control.conditional.etl",
+                    "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(else|if)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+                }
+            ]
+        },
+        "switch-statement": {
+            "name": "switch-statement.expr.etl",
+            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?=\\bswitch\\s*\\()",
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "name": "switch-expression.expr.etl",
+                    "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(switch)\\s*(\\()",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.switch.etl"
+                        },
+                        "2": {
+                            "name": "meta.brace.round.etl"
+                        }
+                    },
+                    "end": "\\)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.brace.round.etl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        }
+                    ]
+                },
+                {
+                    "name": "switch-block.expr.etl",
+                    "begin": "\\{",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.block.etl"
+                        }
+                    },
+                    "end": "(?=\\})",
+                    "patterns": [
+                        {
+                            "name": "case-clause.expr.etl",
+                            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(case|default(?=:))(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))",
+                            "beginCaptures": {
+                                "1": {
+                                    "name": "keyword.control.switch.etl"
+                                }
+                            },
+                            "end": "(?=:)",
+                            "patterns": [
+                                {
+                                    "include": "#expression"
+                                }
+                            ]
+                        },
+                        {
+                            "begin": "(:)\\s*(\\{)",
+                            "beginCaptures": {
+                                "1": {
+                                    "name": "case-clause.expr.etl punctuation.definition.section.case-statement.etl"
+                                },
+                                "2": {
+                                    "name": "meta.block.etl punctuation.definition.block.etl"
+                                }
+                            },
+                            "end": "\\}",
+                            "endCaptures": {
+                                "0": {
+                                    "name": "meta.block.etl punctuation.definition.block.etl"
+                                }
+                            },
+                            "contentName": "meta.block.etl",
+                            "patterns": [
+                                {
+                                    "include": "#scripts"
+                                }
+                            ]
+                        },
+                        {
+                            "match": "(:)",
+                            "captures": {
+                                "0": {
+                                    "name": "case-clause.expr.etl punctuation.definition.section.case-statement.etl"
+                                }
+                            }
+                        },
+                        {
+                            "include": "#scripts"
+                        }
+                    ]
+                }
+            ]
+        },
+        "for-loop": {
+            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))for(?=((\\s+|(\\s*\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*))await)?\\s*(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)?(\\())",
+            "beginCaptures": {
+                "0": {
+                    "name": "keyword.control.loop.etl"
+                }
+            },
+            "end": "(?<=\\))",
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "begin": "\\(",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.brace.round.etl"
+                        }
+                    },
+                    "end": "\\)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.brace.round.etl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#var-declaration"
+                        },
+                        {
+                            "include": "#expression"
+                        },
+                        {
+                            "include": "#punctuation-semicolon"
+                        }
+                    ]
+                }
+            ]
+        },
+        "if-statement": {
+            "patterns": [
+                {
+                    "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?=\\bif\\s*(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))\\s*(?!\\{))",
+                    "end": "(?=;|$|\\})",
+                    "patterns": [
+                        {
+                            "include": "#comment"
+                        },
+                        {
+                            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(if)\\s*(\\()",
+                            "beginCaptures": {
+                                "1": {
+                                    "name": "keyword.control.conditional.etl"
+                                },
+                                "2": {
+                                    "name": "meta.brace.round.etl"
+                                }
+                            },
+                            "end": "\\)",
+                            "endCaptures": {
+                                "0": {
+                                    "name": "meta.brace.round.etl"
+                                }
+                            },
+                            "patterns": [
+                                {
+                                    "include": "#expression"
+                                }
+                            ]
+                        },
+                        {
+                            "include": "#scripts"
+                        }
+                    ]
+                }
+            ]
+        },
+        "while-statement": {
+            "patterns": [
+                {
+                    "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(?=\\bwhile\\s*(\\(([^\\(\\)]|(\\([^\\(\\)]*\\)))*\\))\\s*(?!\\{))",
+                    "end": "(?=;|$|\\})",
+                    "patterns": [
+                        {
+                            "include": "#comment"
+                        },
+                        {
+                            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(while)\\s*(\\()",
+                            "beginCaptures": {
+                                "1": {
+                                    "name": "keyword.control.conditional.etl"
+                                },
+                                "2": {
+                                    "name": "meta.brace.round.etl"
+                                }
+                            },
+                            "end": "\\)",
+                            "endCaptures": {
+                                "0": {
+                                    "name": "meta.brace.round.etl"
+                                }
+                            },
+                            "patterns": [
+                                {
+                                    "include": "#expression"
+                                }
+                            ]
+                        },
+                        {
+                            "include": "#scripts"
+                        }
+                    ]
+                }
+            ]
+        },
+        "script-block": {
+            "begin": "\\{",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#scripts"
                 }
             ]
         },
@@ -132,18 +417,18 @@
                     "name": "keyword.control.using.etl"
                 }
             },
-            "end": "\\s+(as)\\s+([_$[:alpha:]][_$[:alnum:]]*)",
-            "endCaptures": {
-                "1": {
-                    "name": "keyword.control.as.etl"
-                },
-                "2": {
-                    "name": "entity.name.type.package.etl"
-                }
-            },
+            "end": "(?=\\n)",
             "patterns": [
                 {
                     "include": "#string"
+                },
+                {
+                    "name": "keyword.control.as.etl",
+                    "match": "as"
+                },
+                {
+                    "name": "entity.name.type.package.etl",
+                    "match": "[_$[:alpha:]][_$[:alnum:]]*"
                 }
             ]
         },
@@ -151,6 +436,18 @@
             "patterns": [
                 {
                     "include": "#protocol-declaration"
+                },
+                {
+                    "include": "#run-declaration"
+                },
+                {
+                    "include": "#device-declaration"
+                },
+                {
+                    "include": "#join-declaration"
+                },
+                {
+                    "include": "#panel-declaration"
                 }
             ]
         },
@@ -318,6 +615,320 @@
                 },
                 {
                     "include": "#protocol-body"
+                }
+            ]
+        },
+        "run-declaration": {
+            "name": "meta.module.etl",
+            "begin": "\\b(run)\\b(?=\\s+|/[/*])",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.module.etl"
+                }
+            },
+            "end": "(?<=\\})",
+            "patterns": [
+                {
+                    "include": "#run-declaration-patterns"
+                }
+            ]
+        },
+        "run-declaration-patterns": {
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "match": "[_$[:alpha:]][_$[:alnum:]]*",
+                    "captures": {
+                        "0": {
+                            "name": "entity.name.type.module.etl"
+                        }
+                    }
+                },
+                {
+                    "include": "#run-body"
+                }
+            ]
+        },
+        "run-body": {
+            "begin": "\\{",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#run-element-declaration"
+                }
+            ]
+        },
+        "run-element-declaration": {
+            "patterns": [
+                {
+                    "name": "meta.element.run.declaration.etl",
+                    "begin": "\\b(vars|listen|watch|mapping|play)\\b(?=\\s+|/[/*])",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.class.etl"
+                        }
+                    },
+                    "end": "(?<=\\})",
+                    "patterns": [
+                        {
+                            "include": "#element-declaration-patterns"
+                        }
+                    ]
+                }
+            ]
+        },
+        "device-declaration": {
+            "name": "meta.module.etl",
+            "begin": "\\b(device)\\b(?=\\s+|/[/*])",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.module.etl"
+                }
+            },
+            "end": "(?<=\\})",
+            "patterns": [
+                {
+                    "include": "#device-declaration-patterns"
+                }
+            ]
+        },
+        "device-declaration-patterns": {
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "match": "[_$[:alpha:]][_$[:alnum:]]*",
+                    "captures": {
+                        "0": {
+                            "name": "entity.name.type.module.etl"
+                        }
+                    }
+                },
+                {
+                    "include": "#device-body"
+                }
+            ]
+        },
+        "device-body": {
+            "begin": "\\{",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#device-element-declaration"
+                }
+            ]
+        },
+        "device-element-declaration": {
+            "patterns": [
+                {
+                    "name": "meta.element.run.declaration.etl",
+                    "begin": "\\b(connector)\\b(?=\\s+|/[/*])",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.class.etl"
+                        }
+                    },
+                    "end": "(?<=\\})",
+                    "patterns": [
+                        {
+                            "include": "#element-declaration-patterns"
+                        }
+                    ]
+                }
+            ]
+        },
+        "join-declaration": {
+            "name": "meta.module.etl",
+            "begin": "\\b(join)\\b(?=\\s+|/[/*])",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.module.etl"
+                }
+            },
+            "end": "(?<=\\})",
+            "patterns": [
+                {
+                    "include": "#join-declaration-patterns"
+                }
+            ]
+        },
+        "join-declaration-patterns": {
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "match": "[_$[:alpha:]][_$[:alnum:]]*",
+                    "captures": {
+                        "0": {
+                            "name": "entity.name.type.module.etl"
+                        }
+                    }
+                },
+                {
+                    "include": "#jion-body"
+                }
+            ]
+        },
+        "jion-body": {
+            "begin": "\\{",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#jion-element-declaration"
+                }
+            ]
+        },
+        "jion-element-declaration": {
+            "patterns": [
+                {
+                    "name": "meta.element.run.declaration.etl",
+                    "begin": "\\b(channel|ppbus|msbus)\\b(?=\\s+|/[/*])",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.class.etl"
+                        }
+                    },
+                    "end": "(?<=\\})",
+                    "patterns": [
+                        {
+                            "include": "#element-declaration-patterns"
+                        }
+                    ]
+                }
+            ]
+        },
+        "panel-declaration": {
+            "name": "meta.module.etl",
+            "begin": "\\b(panel)\\b(?=\\s+|/[/*])",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.module.etl"
+                }
+            },
+            "end": "(?<=\\})",
+            "patterns": [
+                {
+                    "include": "#panel-declaration-patterns"
+                }
+            ]
+        },
+        "panel-declaration-patterns": {
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "match": "[_$[:alpha:]][_$[:alnum:]]*",
+                    "captures": {
+                        "0": {
+                            "name": "entity.name.type.module.etl"
+                        }
+                    }
+                },
+                {
+                    "include": "#panel-body"
+                }
+            ]
+        },
+        "panel-body": {
+            "begin": "\\{",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#panel-element-declaration"
+                }
+            ]
+        },
+        "panel-element-declaration": {
+            "patterns": [
+                {
+                    "name": "meta.element.run.declaration.etl",
+                    "begin": "\\b(button|label)\\b(?=\\s+|/[/*])",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.class.etl"
+                        }
+                    },
+                    "end": "(?<=\\})",
+                    "patterns": [
+                        {
+                            "include": "#element-declaration-patterns"
+                        }
+                    ]
+                }
+            ]
+        },
+        "element-declaration-patterns": {
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "match": "[_$[:alpha:]][_$[:alnum:]]*",
+                    "captures": {
+                        "0": {
+                            "name": "entity.name.type.class.etl"
+                        }
+                    }
+                },
+                {
+                    "include": "#object-literal"
                 }
             ]
         },
@@ -532,7 +1143,7 @@
                     "include": "#function-parameters"
                 },
                 {
-                    "include": "#script-block"
+                    "include": "#scripts"
                 }
             ]
         },
