@@ -1,0 +1,122 @@
+
+
+protocol aaa {
+    segment df { parser: 'int8' }
+    segment seg_name { parser: 'int8' }
+    segment seg_a { parser: 'int8' }
+    segment seg_dfs { parser: 'int8' }
+}
+
+protocol prot_name {
+    segment seg_name { parser: 'int8' }
+    segments sdf {
+        segment dsf { parser: 'int8' }
+    }
+    oneof(exp) {
+        segment seg_name { parser: 'int8' }
+    }
+    when(exp) {
+        segment seg_name { parser: 'int8' }
+    }
+    oneof(exp) {
+        segment seg_name { parser: 'int8' }
+    }
+    when(exp) {
+        segment seg_name { parser: 'int8' }
+    }
+    
+}
+
+
+
+protocol a {
+    segment s { parser: 'int8' }
+}
+
+protocol sdf {
+    segment df { parser: 'int8' }
+}
+
+run run_name {
+    vars vars_name {
+    }
+    play vars_name {
+        entry: function(data, option) {
+        
+        }
+    }
+}
+
+run run_name {
+    
+    vars vars_name {
+    
+    }
+    
+    
+    play play_name {
+        entry: function(data, option) {
+        
+        }
+    }
+    
+}
+
+
+run run_name {
+    
+    vars vars_name {
+    
+    }
+    
+    play play_name {
+        entry: function(data, option) {
+        
+        }
+    }
+
+    play ss {
+        entry: function(data, option) {
+        
+        }
+    }
+    
+    
+}
+
+
+
+
+run b {
+    play a {
+        entry: function(data, option) {
+
+            for (let index = 0; index < #array; index++) {
+                let element = array[index];
+                
+            }
+            
+            for (let idx = 0; idx < #array; idx++) {
+                let element = array[idx];
+                if(#arr>100) {
+                    let a= % AF AF DF F F 09 FAF %;
+                    let c = % af df 0a 89 af %;
+        
+            }
+            
+            
+            
+            console.log('');
+            aaaa.console.log('dsfdf');
+            aaaa.console.log('');
+            console.log('');
+            console.log('');
+            for (let index = 0; index < array.length; index++) {
+                const element = array[index];
+                
+            }
+        }
+
+        
+    }
+}

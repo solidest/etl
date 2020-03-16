@@ -1,0 +1,121 @@
+{
+	// Place your 全局 snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"protocol": {
+		"scope": "etl",
+		"prefix": "protocol",
+		"body": [
+			"protocol ${1:prot_name} {",
+			"\tsegment ${2:seg_name} { parser: 'int8' }",
+			"}\n",
+		],
+		"description": "协议"
+	},
+
+	"segment": {
+		"scope": "etl",
+		"prefix": "segment",
+		"body": [
+			"segment ${1:seg_name} { parser: 'int8' }",
+		],
+		"description": "协议段"
+	},
+
+	"segments": {
+		"scope": "etl",
+		"prefix": "segments",
+		"body": [
+			"segments ${1:segs_name} {",
+			"\tsegment ${2:seg_name} { parser: 'int8' }",
+			"}\n",
+		],
+		"description": "协议段分组"
+	},
+
+	"oneof": {
+		"scope": "etl",
+		"prefix": "oneof",
+		"body": [
+			"oneof(${1:exp}) {",
+			"\tsegment ${2:seg_name} { parser: 'int8' }",
+			"}\n",
+		],
+		"description": "oneof分支"
+	},
+
+	"when": {
+		"scope": "etl",
+		"prefix": "when",
+		"body": [
+			"when(${1:exp}) {",
+			"\tsegment ${2:seg_name} { parser: 'int8' }",
+			"}\n",
+		],
+		"description": "when分支"
+	},
+
+	"run": {
+		"scope": "etl",
+		"prefix": "run",
+		"body": [
+			"run ${1:run_name} {",
+			"\t",
+			"\tvars ${2:vars_name} {",
+			"\t",
+			"\t}",
+			"\t",
+			"\tplay ${3:play_name} {",
+			"\t\tentry: function(data, option) {",
+			"\t\t",
+			"\t\t}",
+			"\t}",
+			"\t",
+			"}\n"
+		],
+		"description": "运行程序"
+	},
+
+	"vars": {
+		"scope": "etl",
+		"prefix": "vars",
+		"body": [
+			"vars ${1:vars_name} {",
+			"\t",
+			"}\n",
+		],
+		"description": "数据对象"
+	},
+
+	"play": {
+		"scope": "etl",
+		"prefix": "play",
+		"body": [
+			"play ${1:play_name} {",
+			"\tentry: function(data, option) {",
+			"\t",
+			"\t}",
+			"}\n",
+		],
+		"description": "执行入口"
+	},
+
+	"for": {
+		"scope": "etl",
+		"prefix": "for",
+		"body": [
+			"for (let ${1:index} = 0; ${1:index} < #array; ${1:index}++) {",
+			"\tlet element = array[${1:index}];",
+			"\t",
+			"}\n",
+		],
+		"description": "for循环"
+	}
+
+
+
+}

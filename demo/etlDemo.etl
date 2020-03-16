@@ -4,7 +4,7 @@ using 'aaa/sdds.lua' as ffds
 using 'aaa/sdf.dfd' as ddfjkl
 
 protocol prot_1 {
-    segment seg_1 { parser  : 'int8 > &', bdf.df.dd : 100, b.c.auto: 1233.999, aab: true, ddd.fff: null, ccc:len(1, 'aaa', this.a) + this.aaa(dfdf), arr: ['aa', abb, 123, df ] }
+    segment seg_1 { parser: 'int8 > &', bdf.df.dd : 100, b.c.auto: 1233.999, aab: true, ddd.fff: null, ccc:len(1, 'aaa', this.a) + this.aaa(dfdf), arr: ['aa', abb, 123, df ] }
     segment seg_2 { abd.adf: 
         {pack: 'aaa', unpack: true /*ss*/}, 
         afd: [asdb, 'adf', {a:'bb'}],
@@ -16,12 +16,10 @@ protocol prot_1 {
                 sdaf.sdf =dfs;
                 //asdf
                 /*
-
                 */
                 if(a>0) {
                     dfjkl++;
                     df += 1;
-                    
                 }
             },
             unpack: function() {

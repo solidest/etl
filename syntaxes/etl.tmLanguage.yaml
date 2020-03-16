@@ -1149,7 +1149,7 @@ repository:
         '1': { name: keyword.operator.logical.etl }
         '2': { name: keyword.operator.arithmetic.etl }
     - name: keyword.operator.logical.etl
-      match: \!|&&|\|\||\?\?
+      match: \#|\!|&&|\|\||\?\?
     - name: keyword.operator.bitwise.etl
       match: \&|~|\^|\|
     - name: keyword.operator.assignment.etl
@@ -1305,8 +1305,9 @@ repository:
 
   string:
     patterns:
+    - include: '#qstring-triple'
     - include: '#qstring-single'
-    - include: '#qstring-double'
+    - include: '#qstring-hex'
 
   qstring-double:
     name: string.quoted.double.etl
@@ -1331,6 +1332,19 @@ repository:
       '2': { name: invalid.illegal.newline.etl }
     patterns:
     - include: '#string-character-escape'
+
+  qstring-hex:
+    name: string.quoted.hex.etl
+    begin: "%"
+    beginCaptures:
+      '0': { name: punctuation.definition.string.tbegin.etl }
+    end: "%"
+    endCaptures:
+      '0': { name: punctuation.definition.string.tend.etl }
+    patterns:
+    - name: constant.numeric.hex.etl
+      match: '[0-9A-Fa-f\t\s]*'
+      
 
   string-character-escape:
     name: constant.character.escape.etl

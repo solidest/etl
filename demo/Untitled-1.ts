@@ -16,6 +16,29 @@ class c_1 {
         return c;
     }
 
+    for (let index = 0; index < array.length; index++) {
+        const element = array[index];
+        
+    }
+
+    for (let index = 0; index < array.length; index++) {
+        const element = array[index];
+        
+    }
+
+    for (let aaa = 0; aaa < #array; aaa++) {
+        const element = array[aaa];
+        
+    }
+    for (const key in object) {
+        if (object.hasOwnProperty(key)) {
+            const element = object[key];
+            
+        }
+    }
+
+    for
+
 }
 
 class prot_1 {
