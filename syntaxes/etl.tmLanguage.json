@@ -18,18 +18,69 @@
                 },
                 {
                     "include": "#var-declaration"
+                },
+                {
+                    "include": "#var-assignment"
+                },
+                {
+                    "include": "#function-call"
                 }
             ]
         },
         "var-declaration": {
-            "name": "meta.var.etl",
-            "begin": "\\b(let)\\s+([_$[:alpha:]][_$[:alnum:]]*)\\s*(=)",
+            "name": "meta.var.define.etl",
+            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(let)(?=\\s+)",
             "beginCaptures": {
                 "1": {
                     "name": "storage.type.etl"
+                }
+            },
+            "end": ";",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.terminator.statement.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "match": "([_$[:alpha:]][_$[:alnum:]]*)\\s*(\\=)\\s*",
+                    "captures": {
+                        "1": {
+                            "name": "variable.define.etl"
+                        },
+                        "2": {
+                            "name": "keyword.operator.assignment.etl"
+                        }
+                    }
                 },
-                "2": {
-                    "name": "variable.define.etl"
+                {
+                    "name": "meta.var.value.etl",
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        }
+                    ]
+                }
+            ]
+        },
+        "var-assignment": {
+            "name": "meta.var.assignment.etl",
+            "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))([_$[:alpha:]][_$[:alnum:]]*(\\.[_$[:alpha:]][_$[:alnum:]]*)*)(?=\\s+|\\=)",
+            "beginCaptures": {
+                "1": {
+                    "patterns": [
+                        {
+                            "name": "punctuation.accessor.optional.etl",
+                            "match": "\\."
+                        },
+                        {
+                            "name": "variable.parameter.etl",
+                            "match": "[_$[:alpha:]][_$[:alnum:]]*"
+                        },
+                        {
+                            "include": "#this-literal"
+                        }
+                    ]
                 },
                 "3": {
                     "name": "keyword.operator.assignment.etl"
@@ -43,19 +94,20 @@
             },
             "patterns": [
                 {
-                    "include": "#string"
+                    "match": "\\s*(=)\\s*",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.operator.assignment.etl"
+                        }
+                    }
                 },
                 {
-                    "include": "#numeric-literal"
-                },
-                {
-                    "include": "#boolean-literal"
-                },
-                {
-                    "include": "#array-literal"
-                },
-                {
-                    "include": "#object-literal"
+                    "name": "meta.assignment.value.etl",
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        }
+                    ]
                 }
             ]
         },
@@ -292,8 +344,25 @@
         "object-member": {
             "patterns": [
                 {
-                    "name": "meta.object.member.etl meta.object-literal.key.etl",
-                    "match": "([_$[:alpha:]][_$[:alnum:]]*(.[_$[:alpha:]][_$[:alnum:]]*)*[\\s]*:)"
+                    "match": "((?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))([_$[:alpha:]][_$[:alnum:]]*)((\\.)([_$[:alpha:]][_$[:alnum:]]*))*\\s*:)",
+                    "captures": {
+                        "1": {
+                            "patterns": [
+                                {
+                                    "name": "punctuation.accessor.optional.etl",
+                                    "match": "\\."
+                                },
+                                {
+                                    "name": "meta.object.member.etl meta.object-literal.key.etl",
+                                    "match": "[_$[:alpha:]][_$[:alnum:]]*"
+                                },
+                                {
+                                    "name": "meta.object.member.etl meta.object-literal.key.etl",
+                                    "match": ":"
+                                }
+                            ]
+                        }
+                    }
                 },
                 {
                     "name": "meta.object.member.etl",

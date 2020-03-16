@@ -4,7 +4,7 @@ class c_1 {
 
     get abc() {
         let c = {
-            aaa: 12345,
+            aaa.bbb: 12345,
             bbb: '12345',
             ccc: {
                 adf: 'aaa'
@@ -19,6 +19,7 @@ class c_1 {
 
 class prot_1 {
     get abc() {
+        fadj.dsf(dflk);
         let b = 10;
         let f = function(a, b) {
             if(a && b) {

@@ -3,14 +3,16 @@ using 'aaa/sss.etl' as ddf
 
 
 protocol prot_1 {
-    segment seg_1 { parser: 'int8 > &', auto: 1233.999, aab: true, ddd.fff: null, ccc:len(1, 'aaa', this.a) + this.aaa(dfdf), arr: ['aa', abb, 123, df ] }
+    segment seg_1 { parser  : 'int8 > &', bdf.df.dd : 100, b.c.auto: 1233.999, aab: true, ddd.fff: null, ccc:len(1, 'aaa', this.a) + this.aaa(dfdf), arr: ['aa', abb, 123, df ] }
     segment seg_2 { abd.adf: 
         {pack: 'aaa', unpack: true /*ss*/}, 
         afd: [asdb, 'adf', {a:'bb'}],
-        auto: 'aaaa', fff: this.adf*200+20, len: seg_1.val/78 & fdjkl, len :df ||false,  }
+        auto: 'aaaa', fff: this.adf*200+20, len: seg_1.val/78 & fdjkl, len :df ||false,  
+        dasfjkl: this.dsf.fds(dfjkl)}
     segment seg_3 {
         parser: {
             pack: function(a,b) {
+                sdaf.sdf =dfs;
                 //asdf
                 /*
 
@@ -24,15 +26,36 @@ protocol prot_1 {
         adf: 'dsf',
         ss: 123,
         df: function() {
+            adf.dsf =df;
+            fff.dsf.dsf= 223;
+            this.a = 1000 + 20;
+            let f = abcd.ff(a+b);
             let f = 1;
             let f = 'aaaa';
             let a = 0xFFAA;
             let a = false;
             let ddd = true;
             let arr = ['aaa', 'aa', 123, 'aaa', {a: 999}];
-            let ass = {a:'bd', df:333, a: [{}, {aa:'sss'}]};
-            let asf = {};
-
+            let ass = {a:'bd', .dfs:333, a.dsf.df: [{}, {aa:'sss'}]};
+            let asf = {a: 12, b: 'sdaf'};
+            let a;
+            let b;
+            let c = this.a(12);
+            let c;
+            let b = null;
+            a.a.a.a = 12;
+            a = {a: 1, b: 'dasfa', c: {a: 'dfd', c: 1322}};
+            d = [adf, dsf];
+            adf = df;
+            a.b = 15;
+            this.a = 12;
+            this.ab.cc = 13;
+            a.b.c = 100;
+            this.a(dfslk);
+            this.df.a.bdf(dfs);
+            dfjl(dfs);
+            a222(12,3,3,4);
+        
         }
     }
 
