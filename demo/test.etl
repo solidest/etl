@@ -1,4 +1,27 @@
 
+run run_name {
+    
+    vars vars_name {
+    
+    }
+    
+    play play_name {
+        entry: function(data, option) {
+        
+        }
+    }
+    
+}
+
+protocol prot_name {
+    segment seg_name { parser: 'int8' }
+    segment seg_name { parser: 'int8' }
+    segments df {
+        segment df { parser: 'int8' }
+    }
+    
+}
+
 
 protocol aaa {
     segment df { parser: 'int8' }
@@ -62,12 +85,53 @@ run run_name {
     
 }
 
+protocol prot_name {
+    segment seg_name { parser: 'int8' }
+    segment dsf { parser: 'int8' }
+}
+
+
+
 
 run run_name {
     
     vars vars_name {
     
     }
+
+    play play_name {
+        entry: function(data, option) {
+        
+        }
+    }
+    
+    
+    play play_name {
+        entry: function(data, option) {
+            let a = %AAA%;
+        }
+    }
+    
+}
+
+
+run run_name {
+    
+    vars vars_name {
+    
+    }
+
+    vars data {
+        
+    }
+
+    play play_name {
+        entry: function(data, option) {
+            
+        }
+    }
+    
+    
     
     play play_name {
         entry: function(data, option) {
@@ -80,7 +144,7 @@ run run_name {
         
         }
     }
-    
+
     
 }
 
@@ -88,6 +152,19 @@ run run_name {
 
 
 run b {
+    play play_b {
+        entry: function(data, option) {
+            
+        }
+    }
+
+    play play_name {
+        entry: function(data, option) {
+            
+        }
+    }
+    
+    
     play a {
         entry: function(data, option) {
 
@@ -101,10 +178,9 @@ run b {
                 if(#arr>100) {
                     let a= % AF AF DF F F 09 FAF %;
                     let c = % af df 0a 89 af %;
-        
+                    let a = a;
+                    let a = % FA FA 02 99 AF %;
             }
-            
-            
             
             console.log('');
             aaaa.console.log('dsfdf');
@@ -112,7 +188,7 @@ run b {
             console.log('');
             console.log('');
             for (let index = 0; index < array.length; index++) {
-                const element = array[index];
+                let element = array[index];
                 
             }
         }

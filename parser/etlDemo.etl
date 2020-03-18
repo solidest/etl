@@ -277,10 +277,12 @@ run run_1 {
     }
 
     play pl_2 {
-        entry: function(data, option) {
+        entry: function(data, ||option) {
             
         }
     }
 
-
+'/'
 }
+
+

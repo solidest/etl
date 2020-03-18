@@ -10,7 +10,8 @@
     "Programming Languages"
   ],
   "scripts": {
-    "build:grammar": "tsc -b syntaxes/build -v && node syntaxes/build/build.js"
+    "build:grammar": "tsc -b syntaxes/build -v && node syntaxes/build/build.js",
+    "test:parser": "node parser/build.js && syntax-cli -l ./parser/etl.g --tokenize -f ./parser/etlDemo.etl"
   },
   "contributes": {
     "languages": [
@@ -24,7 +25,7 @@
         "extensions": [
           ".etl"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./languages/etl-language-configuration.json"
       }
     ],
     "grammars": [
@@ -33,11 +34,17 @@
         "scopeName": "source.etl",
         "path": "./syntaxes/etl.tmLanguage.json"
       }
+    ],
+    "snippets": [
+      {
+        "language": "etl",
+        "path": "./snippets/snippets.json"
+      }
     ]
   },
   "devDependencies": {
-    "js-yaml": "^3.13.1",
     "@types/js-yaml": "^3.12.2",
-    "@types/node": "^13.9.1"
+    "@types/node": "^13.9.1",
+    "js-yaml": "^3.13.1"
   }
 }

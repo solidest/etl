@@ -474,7 +474,7 @@ repository:
   # device
   device-declaration:
     name: meta.module.etl
-    begin: '\b(device)\b(?=\s+|/[/*])'
+    begin: '\b(softdevice|harddevice)\b(?=\s+|/[/*])'
     beginCaptures:
       '1': { name: storage.type.module.etl }
     end: (?<=\})
