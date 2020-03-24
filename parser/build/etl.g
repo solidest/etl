@@ -87,17 +87,17 @@
         "etl": [
             [
                 "etl_element",
-                ""
+                "$$ = newEtl($etl_element)"
             ],
             [
                 "etl etl_element",
-                ""
+                "$$ = addLine($etl, $etl_element)"
             ]
         ],
         "etl_element": [
             [
                 "USING str",
-                ""
+                "$$ = newUsing($str)"
             ],
             [
                 "comment",
@@ -105,15 +105,17 @@
             ],
             [
                 "block",
-                ""
+                "$$ = $block"
             ]
         ],
         "block": [
             [
-                "BLOCK_BEGIN_LUA block_body BLOCK_END"
+                "BLOCK_BEGIN_LUA block_body BLOCK_END",
+                "$$ = newBlock('block_lua', @1.startOffset+6, @3.endOffset-2);"
             ],
             [
-                "BLOCK_BEGIN_ETL block_body BLOCK_END"
+                "BLOCK_BEGIN_ETL block_body BLOCK_END",
+                "$$ = newBlock('block_etl', @1.startOffset+3, @3.endOffset-2);"
             ]
         ],
         "block_body": [
@@ -139,11 +141,11 @@
         "str": [
             [
                 "STRING_TRIPLE",
-                ""
+                "$$ = $1"
             ],
             [
                 "STRING_SINGLE",
-                ""
+                "$$ = $1"
             ]
         ],
         "comment": [
@@ -156,5 +158,6 @@
                 ""
             ]
         ]
-    }
+    },
+    "moduleInclude": "\n\n    function newBlock(type, from, to) {\n      return { kind: type, from: from, to: to };\n    }\n\n    function newUsing(str) {\n      let len = str.length;\n      let s = str.substring(1, len-2);\n      return { kind: 'using', ref: s };\n    }\n\n    function newEtl(block) {\n      return block ? [block] : [];\n    }\n\n    function addLine(etl, line) {\n      if(line) {\n        etl.push(line);\n      }\n      return etl;\n    }\n"
 }
