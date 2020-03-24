@@ -1,198 +1,64 @@
 
-run run_name {
-    
-    vars vars_name {
-    
-    }
-    
-    play play_name {
-        entry: function(data, option) {
-        
+using "./adsf/sdf.etl"
+using "../adsf.etl" 
+
+<%
+    //注释是这样的
+    protocol prot_name {
+        segment seg_name { parser: 'int8' }
+        segment seg_name { parser: 'int8' }
+        segments df {
+            segment dfhhh { parser: 'int8' }
         }
     }
-    
-}
 
-protocol prot_name {
-    segment seg_name { parser: 'int8' }
-    segment seg_name { parser: 'int8' }
-    segments df {
+    /*
+        这是多行注释///
+        *** 多行注释
+    */
+    protocol aaa {
         segment df { parser: 'int8' }
-    }
-    
-}
-
-
-protocol aaa {
-    segment df { parser: 'int8' }
-    segment seg_name { parser: 'int8' }
-    segment seg_a { parser: 'int8' }
-    segment seg_dfs { parser: 'int8' }
-}
-
-protocol prot_name {
-    segment seg_name { parser: 'int8' }
-    segments sdf {
-        segment dsf { parser: 'int8' }
-    }
-    oneof(exp) {
         segment seg_name { parser: 'int8' }
+        segment seg_a { parser: 'int8' }
+        segment seg_dfs { parser: 'int8' }
     }
-    when(exp) {
+
+    protocol prot_name {
         segment seg_name { parser: 'int8' }
-    }
-    oneof(exp) {
-        segment seg_name { parser: 'int8' }
-    }
-    when(exp) {
-        segment seg_name { parser: 'int8' }
-    }
-    
-}
-
-
-
-protocol a {
-    segment s { parser: 'int8' }
-}
-
-protocol sdf {
-    segment df { parser: 'int8' }
-}
-
-run run_name {
-    vars vars_name {
-    }
-    play vars_name {
-        entry: function(data, option) {
-        
+        segments sdf {
+            segment dsf { parser: 'int8' }
         }
-    }
-}
-
-run run_name {
-    
-    vars vars_name {
-    
-    }
-    
-    
-    play play_name {
-        entry: function(data, option) {
-        
-        }
-    }
-    
-}
-
-protocol prot_name {
-    segment seg_name { parser: 'int8' }
-    segment dsf { parser: 'int8' }
-}
-
-
-
-
-run run_name {
-    
-    vars vars_name {
-    
-    }
-
-    play play_name {
-        entry: function(data, option) {
-        
-        }
-    }
-    
-    
-    play play_name {
-        entry: function(data, option) {
-            let a = %AAA%;
-        }
-    }
-    
-}
-
-
-run run_name {
-    
-    vars vars_name {
-    
-    }
-
-    vars data {
-        
-    }
-
-    play play_name {
-        entry: function(data, option) {
-            
-        }
-    }
-    
-    
-    
-    play play_name {
-        entry: function(data, option) {
-        
-        }
-    }
-
-    play ss {
-        entry: function(data, option) {
-        
-        }
-    }
-
-    
-}
-
-
-
-
-run b {
-    play play_b {
-        entry: function(data, option) {
-            
-        }
-    }
-
-    play play_name {
-        entry: function(data, option) {
-            
-        }
-    }
-    
-    
-    play a {
-        entry: function(data, option) {
-
-            for (let index = 0; index < #array; index++) {
-                let element = array[index];
-                
+        oneof(exp) {
+            segment seg_name { parser: 'int8', tags: ["aaa", 123, 'bbb', %FFAFE ae 2445%] }
+            segment seg_2 {}
+            segment seg3 { 
+                parser: 'int8', 
+                autovalue: checkcode('sum8', this.seg1, this.seg4),
+                repeated: bytesize(this.seg9),
+                autovalue: 0x98AF
             }
-            
-            for (let idx = 0; idx < #array; idx++) {
-                let element = array[idx];
-                if(#arr>100) {
-                    let a= % AF AF DF F F 09 FAF %;
-                    let c = % af df 0a 89 af %;
-                    let a = a;
-                    let a = % FA FA 02 99 AF %;
-            }
-            
-            console.log('');
-            aaaa.console.log('dsfdf');
-            aaaa.console.log('');
-            console.log('');
-            console.log('');
-            for (let index = 0; index < array.length; index++) {
-                let element = array[index];
-                
-            }
+            segment seg4 { parser: 'int8' }
         }
+        when(exp) {
+            segment seg_name { parser: 'int8', len: this.len }
+        }
+        oneof(exp) {
+            segment seg_name { parser: 'int8' }
+        }
+        oneof(this.token==9) {
 
-        
+        }
+        when(exp) {
+            segment seg_name { parser: 'int8' }
+        }
     }
-}
+
+%>
+
+<%lua
+
+    --%>
+    function (a, b)
+        return a + b
+    end
+%>

@@ -32,7 +32,10 @@
       {
         "language": "etl",
         "scopeName": "source.etl",
-        "path": "./syntaxes/etl.tmLanguage.json"
+        "path": "./syntaxes/etl.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.lua": "lua"
+        }
       }
     ],
     "snippets": [
