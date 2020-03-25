@@ -1,9 +1,9 @@
 
-using "./adsf/sdf.etl"
-using '../adsf.etl'
-using ""
+                      
+                   
+        
 
-<%
+  
     //注释是这样的
     /*
         这是多行注释///
@@ -25,7 +25,10 @@ using ""
         segment df { parser: 'int8' }
         segment seg_name { parser: 'int8' }
         segment seg_a { parser: 'int8' }
-        segment seg_dfs { parser: "" }
+        segment seg_dfs { parser: {
+            pack: this.aaa,
+            unpack: this.bbb.ddd.dd
+        } }
         segment seg_dfs { parser: "" }
     }
 
@@ -59,25 +62,25 @@ using ""
         }
     }
 
-%>
+  
 
 
-using "./adsf/sdf.etl"
-using '../adsf.etl'
+                      
+                   
 
-<%lua
-    --%>
+     
+        
 
-    function a(b, c)
-        b++;
-        return b + c;
-    end
+                    
+            
+                     
+       
 
 
-    a>9
+       
     
-    --[[
-        <% %>
-        <%lua "dsf"
-    --]]
-%>
+        
+             
+                   
+        
+  

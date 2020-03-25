@@ -9,28 +9,28 @@
                 "etl"
             ],
             "\\/\\*[^*]*\\*+([^\\/][^*]*\\*+)*\\/",
-            "return 'COMMENT_BLOCK'"
+            "/*return 'COMMENT_BLOCK'*/"
         ],
         [
             [
                 "etl"
             ],
             "\\/\\/[^\\r\\n]*",
-            "return 'COMMENT_LINE'"
+            "/*return 'COMMENT_LINE'*/"
         ],
         [
             [
                 "lua"
             ],
             "--\\[\\[(.|\\r\\n|\\r|\\n)*\\]\\]",
-            "return 'COMMENT_BLOCK'"
+            "/*return 'COMMENT_BLOCK'*/"
         ],
         [
             [
                 "lua"
             ],
             "--[^\\n]*",
-            "return 'COMMENT_LINE'"
+            "/*return 'COMMENT_LINE'*/"
         ],
         [
             [

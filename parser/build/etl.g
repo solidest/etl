@@ -10,28 +10,28 @@
                     "etl"
                 ],
                 "\\/\\*[^*]*\\*+([^\\/][^*]*\\*+)*\\/",
-                "return 'COMMENT_BLOCK'"
+                "/*return 'COMMENT_BLOCK'*/"
             ],
             [
                 [
                     "etl"
                 ],
                 "\\/\\/[^\\r\\n]*",
-                "return 'COMMENT_LINE'"
+                "/*return 'COMMENT_LINE'*/"
             ],
             [
                 [
                     "lua"
                 ],
                 "--\\[\\[(.|\\r\\n|\\r|\\n)*\\]\\]",
-                "return 'COMMENT_BLOCK'"
+                "/*return 'COMMENT_BLOCK'*/"
             ],
             [
                 [
                     "lua"
                 ],
                 "--[^\\n]*",
-                "return 'COMMENT_LINE'"
+                "/*return 'COMMENT_LINE'*/"
             ],
             [
                 [
@@ -100,10 +100,6 @@
                 "$$ = newUsing($str)"
             ],
             [
-                "comment",
-                ""
-            ],
-            [
                 "block",
                 "$$ = $block"
             ]
@@ -111,30 +107,28 @@
         "block": [
             [
                 "BLOCK_BEGIN_LUA block_body BLOCK_END",
-                "$$ = newBlock('block_lua', @1.startOffset+6, @3.endOffset-2);"
+                "$$ = newBlock('block_lua', @1.startOffset+5, @3.endOffset-2);"
+            ],
+            [
+                "BLOCK_BEGIN_LUA BLOCK_END",
+                "$$ = newBlock('block_lua', @1.startOffset+5, @2.endOffset-2);"
             ],
             [
                 "BLOCK_BEGIN_ETL block_body BLOCK_END",
-                "$$ = newBlock('block_etl', @1.startOffset+3, @3.endOffset-2);"
+                "$$ = newBlock('block_etl', @1.startOffset+2, @3.endOffset-2);"
+            ],
+            [
+                "BLOCK_BEGIN_ETL BLOCK_END",
+                "$$ = newBlock('block_etl', @1.startOffset+2, @2.endOffset-2);"
             ]
         ],
         "block_body": [
             [
-                "body_line",
-                ""
-            ],
-            [
-                "block_body body_line",
-                ""
-            ]
-        ],
-        "body_line": [
-            [
-                "comment",
-                ""
-            ],
-            [
                 "str",
+                ""
+            ],
+            [
+                "block_body str",
                 ""
             ]
         ],
@@ -146,16 +140,6 @@
             [
                 "STRING_SINGLE",
                 "$$ = $1"
-            ]
-        ],
-        "comment": [
-            [
-                "COMMENT_BLOCK",
-                ""
-            ],
-            [
-                "COMMENT_LINE",
-                ""
             ]
         ]
     },
