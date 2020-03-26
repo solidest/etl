@@ -11,6 +11,10 @@ function getEtlAst(proj_path, src_path, refs) {
   let proj_apath = path.isAbsolute(proj_path) ? proj_path : path.resolve(proj_path);
   let src_rpath = path.relative(proj_apath, src_apath);
 
+  if(src_rpath.startsWith('.')) {
+    throw new Error(`无法解析文件"${src_path}"`);
+  }
+
   let ast = {
     kind: 'etl',
     apath_src: src_apath,
@@ -35,30 +39,28 @@ function getEtlAst(proj_path, src_path, refs) {
   }
 
   getRefs(src_apath, astlist, refs);
-
   return ast;
 }
 
 //添加引用的文件到refs里
 function getRefs(src_apath, astlist, refs) {
-    let apath = path.dirname(src_apath);
-    for (let a of astlist) {
+  let apath = path.dirname(src_apath);
+  for (let a of astlist) {
     if (a.kind === 'block_lua') {
-        if (a.refs) {
+      if (a.refs) {
         for (let ref of a.refs) {
-            try {
+          try {
             refs.push(path.resolve(apath, ref))
-            } catch (error) {
+          } catch (error) {
             console.log(error)
-            }
+          }
         }
-        }
+      }
     } else if (a.kind === 'using') {
-        refs.push(path.resolve(apath, a.ref));
+      refs.push(path.resolve(apath, a.ref));
     }
-    }
-    console.log(refs)
-    return refs;
+  }
+  return refs;
 }
 
 //解析引用到的文件
@@ -87,6 +89,10 @@ function getRunLuaList(proj_path, src_path, astlist) {
   let proj_apath = path.isAbsolute(proj_path) ? proj_path : path.resolve(proj_path);
   let src_rpath = path.relative(proj_apath, src_apath);
   let text = fs.readFileSync(src_apath, "utf8");
+
+  if(src_rpath.startsWith('.')) {
+    throw new Error(`无法解析文件"${src_path}"`);
+  }
 
   let ast = {
     kind: 'lua',
