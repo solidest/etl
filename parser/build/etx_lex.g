@@ -34,7 +34,7 @@
         ],
         [
             "program",
-            "return 'PROGRAM"
+            "return 'PROGRAM'"
         ],
         [
             "segments",

@@ -87,11 +87,11 @@
         "etl": [
             [
                 "etl_element",
-                "$$ = newEtl($etl_element)"
+                "$$ = newList($etl_element)"
             ],
             [
                 "etl etl_element",
-                "$$ = addLine($etl, $etl_element)"
+                "$$ = joinList($etl, $etl_element)"
             ]
         ],
         "etl_element": [
@@ -107,29 +107,29 @@
         "block": [
             [
                 "BLOCK_BEGIN_LUA block_body BLOCK_END",
-                "$$ = newBlock('block_lua', @1.startOffset+5, @3.endOffset-2);"
+                "$$ = newBlock('block_lua', $block_body, @1.startOffset+5, @3.endOffset-2);"
             ],
             [
                 "BLOCK_BEGIN_LUA BLOCK_END",
-                "$$ = newBlock('block_lua', @1.startOffset+5, @2.endOffset-2);"
+                "$$ = newBlock('block_lua', null, @1.startOffset+5, @2.endOffset-2);"
             ],
             [
                 "BLOCK_BEGIN_ETL block_body BLOCK_END",
-                "$$ = newBlock('block_etl', @1.startOffset+2, @3.endOffset-2);"
+                "$$ = newBlock('block_etx', null, @1.startOffset+2, @3.endOffset-2);"
             ],
             [
                 "BLOCK_BEGIN_ETL BLOCK_END",
-                "$$ = newBlock('block_etl', @1.startOffset+2, @2.endOffset-2);"
+                "$$ = newBlock('block_etx', null, @1.startOffset+2, @2.endOffset-2);"
             ]
         ],
         "block_body": [
             [
                 "str",
-                ""
+                "$$ = newList(getRef(yytext))"
             ],
             [
                 "block_body str",
-                ""
+                "$$ = joinList($block_body, getRef(yytext))"
             ]
         ],
         "str": [
@@ -143,5 +143,5 @@
             ]
         ]
     },
-    "moduleInclude": "\n\n    function newBlock(type, from, to) {\n      return { kind: type, from: from, to: to };\n    }\n\n    function newUsing(str) {\n      let len = str.length;\n      let s = str.substring(1, len-2);\n      return { kind: 'using', ref: s };\n    }\n\n    function newEtl(block) {\n      return block ? [block] : [];\n    }\n\n    function addLine(etl, line) {\n      if(line) {\n        etl.push(line);\n      }\n      return etl;\n    }\n"
+    "moduleInclude": "\n\n    function newBlock(type, refs, from, to) {\n      return { kind: type, refs: refs, from: from, to: to };\n    }\n\n    function newUsing(str) {\n      return { kind: 'using', ref: eval(str) };\n    }\n\n    function newList(item) {\n      return item ? [item] : [];\n    }\n\n    function joinList(list, item) {\n      if(list && item) {\n        list.push(item);\n      }\n      return list;\n    }\n\n    function getRef(str) {\n      let s = eval(str);\n      if(s && s.endsWith(\".lua\")) {\n        return s;\n      }\n      return null;\n    }\n"
 }

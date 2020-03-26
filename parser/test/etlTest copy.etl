@@ -1,8 +1,10 @@
 
+using "./adsf/sdf.etl"
+using '../adsf.etl'
+using ""
+using "./etlTest.etl"
 
-
-
-
+<%
     //注释是这样的
     /*
         这是多行注释///
@@ -58,3 +60,31 @@
         }
     }
 
+%>
+
+
+using "./adsf/sdf.etl"
+using '../adsf.etl'
+
+<%lua
+    --%>
+
+    function a(b, c)
+        b++;
+        return b + c;
+    end
+
+    "./etlTest.lua"
+
+    "afd.lua"
+    ""
+    "dfs/dsf"
+
+
+    a>9
+    
+    --[[
+        <% %>
+        <%lua "dsf"
+    --]]
+%>

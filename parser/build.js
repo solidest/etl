@@ -1,5 +1,5 @@
-var fs = require("fs");
-var path = require("path");
+const fs = require("fs");
+const path = require("path");
 
 let lex_main = {
   startConditions: {
@@ -25,8 +25,8 @@ let lex_main = {
 let bnf_main = {
   
   etl: [
-    ["etl_element", "$$ = newEtl($etl_element)"],
-    ["etl etl_element", "$$ = addLine($etl, $etl_element)"]
+    ["etl_element", "$$ = newList($etl_element)"],
+    ["etl etl_element", "$$ = joinList($etl, $etl_element)"]
   ],
 
   etl_element: [
@@ -35,15 +35,15 @@ let bnf_main = {
   ],
 
   block: [
-    ["BLOCK_BEGIN_LUA block_body BLOCK_END", "$$ = newBlock('block_lua', @1.startOffset+5, @3.endOffset-2);"],
-    ["BLOCK_BEGIN_LUA BLOCK_END", "$$ = newBlock('block_lua', @1.startOffset+5, @2.endOffset-2);"],
-    ["BLOCK_BEGIN_ETL block_body BLOCK_END", "$$ = newBlock('block_etl', @1.startOffset+2, @3.endOffset-2);"],
-    ["BLOCK_BEGIN_ETL BLOCK_END", "$$ = newBlock('block_etl', @1.startOffset+2, @2.endOffset-2);"],
+    ["BLOCK_BEGIN_LUA block_body BLOCK_END", "$$ = newBlock('block_lua', $block_body, @1.startOffset+5, @3.endOffset-2);"],
+    ["BLOCK_BEGIN_LUA BLOCK_END", "$$ = newBlock('block_lua', null, @1.startOffset+5, @2.endOffset-2);"],
+    ["BLOCK_BEGIN_ETL block_body BLOCK_END", "$$ = newBlock('block_etx', null, @1.startOffset+2, @3.endOffset-2);"],
+    ["BLOCK_BEGIN_ETL BLOCK_END", "$$ = newBlock('block_etx', null, @1.startOffset+2, @2.endOffset-2);"],
   ],
 
   block_body: [
-    ["str", ""],
-    ["block_body str", ""]
+    ["str", "$$ = newList(getRef(yytext))"],
+    ["block_body str", "$$ = joinList($block_body, getRef(yytext))"]
   ],
 
   str: [
@@ -54,25 +54,31 @@ let bnf_main = {
 
 let include_main = `
 
-    function newBlock(type, from, to) {
-      return { kind: type, from: from, to: to };
+    function newBlock(type, refs, from, to) {
+      return { kind: type, refs: refs, from: from, to: to };
     }
 
     function newUsing(str) {
-      let len = str.length;
-      let s = str.substring(1, len-2);
-      return { kind: 'using', ref: s };
+      return { kind: 'using', ref: eval(str) };
     }
 
-    function newEtl(block) {
-      return block ? [block] : [];
+    function newList(item) {
+      return item ? [item] : [];
     }
 
-    function addLine(etl, line) {
-      if(line) {
-        etl.push(line);
+    function joinList(list, item) {
+      if(list && item) {
+        list.push(item);
       }
-      return etl;
+      return list;
+    }
+
+    function getRef(str) {
+      let s = eval(str);
+      if(s && s.endsWith(".lua")) {
+        return s;
+      }
+      return null;
     }
 `
 
@@ -86,7 +92,7 @@ let lex_etx = {
     ["\\s+", "/* return 'WHITESPACE' */"],
     ["\\n", "/* return 'NEWLINE' */"],
     ["protocol", "return 'PROTOCOL'"],
-    ["program", "return 'PROGRAM"],
+    ["program", "return 'PROGRAM'"],
     ["segments", "return 'SEGMENTS'"],
     ["segment", "return 'SEGMENT'"],
     ["when", "return 'WHEN'"],
@@ -121,39 +127,39 @@ let lex_etx = {
 
 let bnf_etx = {
   top_element_list: [
-    ["top_element", ""],
-    ["top_element_list top_element", ""]
+    ["top_element", "$$ = newList($top_element);"],
+    ["top_element_list top_element", "$$ = joinList($top_element_list, $top_element);"]
   ],
 
   top_element: [
-    ["PROTOCOL ID { }", ""],
-    ["PROTOCOL ID { protocol_element_list }", ""],
+    ["PROTOCOL ID { }", "newElement('protocol', $ID, 'seglist', null, @ID);"],
+    ["PROTOCOL ID { protocol_element_list }", "$$ = newElement('protocol', $ID,'seglist', $protocol_element_list, @ID);"],
     ["PROGRAM ID { }", ""],
     ["PROGRAM ID { program_element_list }", ""],
   ],
 
   // protocol
   protocol_element_list: [
-    ["protocol_element", ""],
-    ["protocol_element_list protocol_element", ""]
+    ["protocol_element", "$$ = newList($protocol_element);"],
+    ["protocol_element_list protocol_element", "$$ = joinList($protocol_element_list, $protocol_element)"]
   ],
 
   protocol_element: [
-    ["SEGMENT ID object_like", ""],
-    ["segments", ""],
-    ["branch", ""],
+    ["SEGMENT ID object_like", "$$ = newElement('segment', $ID, 'props', $object_like, @ID);"],
+    ["segments", "$$ = $segments;"],
+    ["branch", "$$ = $branch;"],
   ],
 
   segments: [
-    ["SEGMENTS ID { }", ""],
-    ["SEGMENTS ID { protocol_element_list }", ""],
+    ["SEGMENTS ID { }", "$$ = newProtSeggroup($ID, null, @ID);"],
+    ["SEGMENTS ID { protocol_element_list }", "$$ = newProtSeggroup($ID, $protocol_element_list, @ID);"],
   ],
 
   branch: [
-    ["WHEN ( exp ) { }", ""],
-    ["WHEN ( exp ) { protocol_element_list }", ""],
-    ["ONEOF ( exp ) { }", ""],
-    ["ONEOF ( exp ) { protocol_element_list }", ""],
+    ["WHEN ( exp ) { }", "$$ = newProtBranch('when', $exp, null, @exp);"],
+    ["WHEN ( exp ) { protocol_element_list }", "$$ = newProtBranch('when', $exp, $protocol_element_list, @exp);"],
+    ["ONEOF ( exp ) { }", "$$ = newProtBranch('oneof', $exp, null, @exp);"],
+    ["ONEOF ( exp ) { protocol_element_list }", "$$ = newProtBranch('oneof', $exp, $protocol_element_list, @exp);"],
   ],
 
   // program
@@ -161,90 +167,166 @@ let bnf_etx = {
     
   ],
 
-
   // common
   object_like: [
-    ["{ }", ""],
-    ["{ property_list }", ""],
+    ["{ }", "$$ = newList(null);"],
+    ["{ property_list }", "$$ = $property_list;"],
   ],
 
   property_list: [
-    ["property_setting", ""],
-    ["property_list , property_setting", ""],
-    ["property_list ,", ""],
+    ["property_setting", "$$ = newList($property_setting);"],
+    ["property_list , property_setting", "$$ = joinList($property_list, $property_setting);"],
+    ["property_list ,", "$$ = $property_list;"],
   ],
 
   property_setting: [
-    ["ID : exp", ""]
+    ["ID : exp", "$$ = newProp($ID, $exp, @ID, @exp);"]
   ],
 
   exp: [
-    ["literal", ""],
-    ["object_like", ""],
-    ["NOT exp", ""],
-    ["- exp", "", { "prec": "UMINUS" }],
-    ["exp_compare", ""],
-    ["exp_calc", ""],
-    ["exp_bin", ""],
-    ["( exp )", ""],
-    ["[ ]", ""],
-    ["[ arrlist ]", ""],
-    ["fn_call", ""],
+    ["literal", "$$ = $literal;"],
+    ["object_like", "$$ = $object_like;"],
+    ["NOT exp", "$$ = {kind: 'not', exp: $exp};"],
+    ["- exp", "$$ = {kind: 'uminus', exp: $exp};", { "prec": "UMINUS" }],
+    ["exp_compare", "$$ = $exp_compare;"],
+    ["exp_calc", "$$ = $exp_calc;"],
+    ["exp_bin", "$$ = $exp_bin;"],
+    ["( exp )", "$$ = $exp;"],
+    ["[ ]", "$$ = newKindList('array', null);"],
+    ["[ arrlist ]", "$$ = $arrlist;"],
+    ["fn_call", "$$ = $fn_call;"],
   ],
 
   exp_compare: [
-    ["exp NOT_EQ exp", ""],
-    ["exp EQ_EQ exp", ""],
-    ["exp GT_EQ exp", ""],
-    ["exp LT_EQ exp", ""],
-    ["exp > exp", ""],
-    ["exp < exp", ""],
+    ["exp NOT_EQ exp", "$$ = {kind: 'not_eq', left: $1, right: $3};"],
+    ["exp EQ_EQ exp", "$$ = {kind: 'eq_eq', left: $1, right: $3};"],
+    ["exp GT_EQ exp", "$$ = {kind: 'gt_eq', left: $1, right: $3};"],
+    ["exp LT_EQ exp", "$$ = {kind: 'lt_eq', left: $1, right: $3};"],
+    ["exp > exp", "$$ = {kind: 'gt', left: $1, right: $3};"],
+    ["exp < exp", "$$ = {kind: 'lt', left: $1, right: $3};"],
   ],
 
   exp_bin: [
-    ["exp AND exp", ""],
-    ["exp OR exp", ""],
+    ["exp AND exp", "$$ = {kind: 'and', left: $1, right: $3};"],
+    ["exp OR exp", "$$ = {kind: 'or', left: $1, right: $3};"],
   ],
 
   exp_calc: [
-    ["exp + exp", ""],
-    ["exp - exp", ""],
-    ["exp * exp", ""],
-    ["exp / exp", ""],
+    ["exp + exp", "$$ = {kind: 'add', left: $1, right: $3};"],
+    ["exp - exp", "$$ = {kind: 'subtract', left: $1, right: $3};"],
+    ["exp * exp", "$$ = {kind: 'multiply', left: $1, right: $3};"],
+    ["exp / exp", "$$ = {kind: 'divide', left: $1, right: $3};"],
   ],
 
   fn_call: [
-    ["pid ( )", ""],
-    ["pid ( arrlist )", ""],
+    ["pid ( )", "$$ = {kind: 'fn_call', pname: $pid};"],
+    ["pid ( arrlist )", "$$ = {kind: 'fn_call', pname: $pid, args: $arrlist};"],
   ],
 
   arrlist: [
-    ["exp", ""],
-    ["arrlist , exp", ""],
-    ["arrlist ,", ""],
+    ["exp", "$$ = newKindList('array', $exp);"],
+    ["arrlist , exp", "$$ = joinKindList($arrlist, $exp);"],
+    ["arrlist ,", "$$ = $arrlist;"],
   ],
 
   literal: [
-    ["NUMBER", ""],
-    ["NUMBER_HEX", ""],
-    ["STRING_TRIPLE", ""],
-    ["STRING_SINGLE", ""],
-    ["STRING_HEX", ""],
-    ["pid", ""],
+    ["NUMBER", "$$ = {kind: 'number', value: eval(yytext)};"],
+    ["NUMBER_HEX", "$$ = {kind: 'number', value: eval(yytext)};"],
+    ["str", "$$ = $str;"],
+    ["pid", "$$ = $pid;"],
   ],
 
   pid: [
-    ["ID", ""],
-    ["pid DOT ID", ""]
+    ["ID", "$$ = newKindList('pid', $1);"],
+    ["pid DOT ID", "$$ = joinKindList($pid, $ID);"]
   ],
 
   str: [
-    ["STRING_TRIPLE", ""],
-    ["STRING_SINGLE", ""],
-    ["STRING_HEX", ""],
+    ["STRING_TRIPLE", "$$ = {kind: 'string', value: eval(yytext)};"],
+    ["STRING_SINGLE", "$$ = {kind: 'string', value: eval(yytext)};"],
+    ["STRING_HEX", "$$ = {kind: 'strhex',  value: yytext};"],
   ],
 
 }
+
+
+let include_etx = `
+
+    function newList(item) {
+      if(item) {
+        return [item];
+      } else {
+        return [];
+      }
+    }
+
+    function joinList(list, item) {
+      if(list && item) {
+        list.push(item);
+      }
+      return list;
+    }
+
+    function newKindList(kind, item) {
+      if(item) {
+        return {kind: kind, list: [item]};
+      } else {
+        return {kind: kind, list: []};
+      }
+    }
+
+    function joinKindList(list, item) {
+      if(list && list.list && item) {
+        list.list.push(item);
+      }
+      return list;
+    }
+
+    function newProp(id, exp, id_loc, exp_loc) {
+      return {
+        kind: 'prop',
+        name: id,
+        value: exp,
+        name_from: id_loc.startOffset,
+        name_to: id_loc.endOffset,
+        value_from: exp_loc.startOffset,
+        value_to: exp_loc.endOffset,
+      }
+    }
+
+    function newProtBranch(kind, exp, seglist, exp_loc) {
+      return {
+        kind: kind,
+        exp: exp,
+        seglist: seglist,
+        exp_from: exp_loc.startOffset,
+        exp_to: exp_loc.endOffset,
+      }
+    }
+
+    function newProtSeggroup(name, seglist, name_loc) {
+      return {
+        kind: 'seggroup',
+        name: name,
+        seglist: seglist,
+        name_from: name_loc.startOffset,
+        name_to: name_loc.endOffset,
+      }
+    }
+
+    function newElement(kind, name, body_name, body, name_loc) {
+      let res = {
+        kind: kind,
+        name: name,
+        name_from: name_loc.startOffset,
+        name_to: name_loc.endOffset,
+      }
+      res[body_name] = body;
+      return res;
+    }
+
+
+`
 
 let operators = [
   ["left", "AND", "OR"],
@@ -273,10 +355,10 @@ let operators = [
 
 */
 
+fs.writeFileSync(path.join(__dirname, 'build/etl_lex.g'), JSON.stringify(lex_main, null, 4));
+fs.writeFileSync(path.join(__dirname, 'build/etl.g'), JSON.stringify({lex: lex_main, bnf: bnf_main, moduleInclude: include_main}, null, 4));
 fs.writeFileSync(path.join(__dirname, 'build/etx_lex.g'), JSON.stringify(lex_etx, null, 4));
-fs.writeFileSync(path.join(__dirname, 'build/etx.g'), JSON.stringify({lex: lex_etx, operators: operators, bnf: bnf_etx, moduleInclude: include_main}, null, 4));
-
-
+fs.writeFileSync(path.join(__dirname, 'build/etx.g'), JSON.stringify({lex: lex_etx, operators: operators, bnf: bnf_etx, moduleInclude: include_etx}, null, 4));
 
 /* EST
 
@@ -296,7 +378,5 @@ fs.writeFileSync(path.join(__dirname, 'build/etx.g'), JSON.stringify({lex: lex_e
   node parser/build.js && syntax-cli -m slr1 -g parser/build/etl.g -o parser/etlParser.js --loc && syntax-cli -m slr1 -g parser/build/etl.g -f parser/test/etlTest.etl --loc
 */
 
-fs.writeFileSync(path.join(__dirname, 'build/etl_lex.g'), JSON.stringify(lex_main, null, 4));
-fs.writeFileSync(path.join(__dirname, 'build/etl.g'), JSON.stringify({lex: lex_main, bnf: bnf_main, moduleInclude: include_main}, null, 4));
 
 

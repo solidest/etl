@@ -2,6 +2,7 @@
 using "./adsf/sdf.etl"
 using '../adsf.etl'
 using ""
+using "./etlTest copy.etl"
 
 <%
     //注释是这样的
@@ -72,6 +73,12 @@ using '../adsf.etl'
         b++;
         return b + c;
     end
+
+    "./etlTest.lua"
+
+    "afd.lua"
+    ""
+    "dfs/dsf"
 
 
     a>9

@@ -1,19 +1,21 @@
 
 const fs = require("fs");
 const path = require("path");
-const parser = require("../etlParser");
-const helper = require("../helper");
+const helper = require("../parser");
 
-let text = fs.readFileSync(path.join(__dirname, 'etlTest.etl'), "utf8");
-let ast = parser.parse(text);
-helper.getSingleLanguageText(text, ast);
+let src_path = path.join(__dirname, 'etlTest.etl');
+let asts = helper.getRunAstList(__dirname, src_path);
+let ast = asts[0];
 
-for(let a of ast) {
-    console.log(a.kind)
-    if(a.kind==='block_etl') {
-        fs.writeFileSync(path.join(__dirname, './etxTest.etx'), a.document);
-    } else if(a.kind === 'block_lua') {
-        fs.writeFileSync(path.join(__dirname, './etlTest.lua'), a.document);
-    }
+if(ast.script_etx) {
+    fs.writeFileSync(path.join(__dirname, './etxTest.json'), JSON.stringify(ast.script_etx, null, 4));
+} 
+
+if(ast.script_lua) {
+    fs.writeFileSync(path.join(__dirname, './etlTest.lua'), ast.script_lua);
 }
+
+console.log(ast);
+console.log(asts.length);
+
 
