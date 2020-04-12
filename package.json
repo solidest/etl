@@ -4,7 +4,7 @@
   "description": "ETL tooling for VS Code",
   "version": "0.1.1",
   "publisher": "Kiyun",
-  "icon": "asset/logo.png",
+  "icon": "https://solidest.github.io/etl/logo.png",
   "repository": {
       "type": "git",
       "url": "git+https://github.com/solidest/etl.git"
