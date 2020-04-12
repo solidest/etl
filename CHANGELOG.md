@@ -1,9 +1,9 @@
-# Change Log
+# 更新日志
 
-All notable changes to the "etl" extension will be documented in this file.
+## 0.1.x
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+- 首次发布
+- 实现 ETL 语法自动缩进
+- 实现 ETL 语法自动关闭成对符号
+- 实现 ETL 语法高亮
+- 实现 protocol 自动代码片段
