@@ -136,9 +136,43 @@ variables:
 
 patterns:
   - include: '#comment'
-  - include: '#top-declaration'
+  - include: '#using-file'
+  - include: '#lua-block'
+  - include: '#dpd-block'
 
 repository:
+
+  lua-block:
+    contentName: "source.lua"
+    begin: '<%lua'
+    beginCaptures:
+      '0': { name: storage.type.module.etl }
+    end: '%>'
+    endCaptures:
+      '0': { name: storage.type.module.etl }
+    patterns:
+      - include: "source.lua"
+
+  dpd-block:
+    name: meta.block.etl
+    begin: '<%'
+    beginCaptures:
+      '0': { name: storage.type.module.etl }
+    end: '%>'
+    endCaptures:
+      '0': { name: storage.type.module.etl }
+    patterns:
+    - include: '#comment'
+    - include: '#top-declaration' 
+
+  using-file:
+    name: meta.import.etl
+    begin: '{{startOfDeclaration}}\b(using)(?:\s+)'
+    beginCaptures:
+      '2': { name: keyword.control.using.etl }
+    end: (?=\n)
+    patterns:
+    - include: '#string'
 
   # top element declaration
   top-declaration:
@@ -174,7 +208,7 @@ repository:
     - include: '#comment'
     - include: '#protocol-segment-declaration'
     - include: '#protocol-segments-declaration'
-    - include: '#protocol-oneof-declaration'
+    - include: '#protocol-case-declaration'
 
   protocol-segment-declaration:
     patterns:
@@ -192,7 +226,6 @@ repository:
     - match: '{{identifier}}'
       captures:
         '0': { name: entity.name.type.class.etl }
-    - include: '#element-arraylen'
     - include: '#object-literal'
 
   protocol-segments-declaration:
@@ -211,37 +244,23 @@ repository:
     - match: '{{identifier}}'
       captures:
         '0': { name: entity.name.type.class.etl }
-    - include: '#element-arraylen'
     - include: '#protocol-body'
 
-  protocol-oneof-declaration:
+  protocol-case-declaration:
     patterns:
     - name: meta.segment.declaration.etl
-      begin: '\b(oneof)\b(?=\s+|\()'
+      begin: '\b((oneof)|(when))\b(?=\s+|\()'
       beginCaptures:
         '1': { name: keyword.control.conditional.etl }
       end: (?<=\})
       patterns:
-      - include: '#protocol-oneof-declaration-patterns'
+      - include: '#protocol-case-declaration-patterns'
 
-  protocol-oneof-declaration-patterns:
+  protocol-case-declaration-patterns:
     patterns:
     - include: '#comment'
     - include: '#paren-expression'
     - include: '#protocol-body'
-
-  # array len
-  element-arraylen:
-    name: meta.arraylen.etl
-    begin: \[
-    beginCaptures:
-      '0': { name: punctuation.definition.block.etl }
-    end: \]
-    endCaptures:
-      '0': { name: punctuation.definition.block.etl }
-    patterns:
-    - include: '#numeric-literal'
-    - include: '#expression'
 
   # element
   element-declaration-patterns:

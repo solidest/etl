@@ -4,7 +4,7 @@
 		"prefix": "protocol",
 		"body": [
 			"protocol ${1:prot_name} {",
-			"\tsegment ${2:seg_name} { parser: 'int8' }",
+			"\tsegment ${2:seg_name} { parser: '${3:uint8}', }",
 			"}\n"
 		],
 		"description": "协议"
@@ -14,7 +14,7 @@
 		"scope": "etl",
 		"prefix": "segment",
 		"body": [
-			"segment ${1:seg_name} { parser: 'int8' }",
+			"segment ${1:seg_name} { parser: '${2:uint8}', }"
 		],
 		"description": "协议段"
 	},
@@ -24,32 +24,48 @@
 		"prefix": "segments",
 		"body": [
 			"segments ${1:segs_name} {",
-			"\tsegment ${2:seg_name} { parser: 'int8' }",
+			"\tsegment ${2:seg_name} { parser: '${3:uint8}', }",
 			"}\n"
 		],
-		"description": "协议段分组"
+		"description": "协议分组"
 	},
 
 	"oneof": {
 		"scope": "etl",
 		"prefix": "oneof",
 		"body": [
-			"oneof(${1:exp}) {",
-			"\tsegment ${2:seg_name} { parser: 'int8' }",
+			"oneof(this.${1:seg} == $2) {",
+			"\tsegment ${3:seg_name} { parser: '${4:uint8}', }",
 			"}\n"
 		],
-		"description": "oneof分支"
+		"description": "协议分支"
 	},
 
-	"when": {
+	"CheckCode": {
 		"scope": "etl",
-		"prefix": "when",
+		"prefix": "CheckCode",
 		"body": [
-			"when(${1:exp}) {",
-			"\tsegment ${2:seg_name} { parser: 'int8' }",
-			"}\n"
+			"CheckCode(${1:SUM_8}, this.${2:seg_begin}, this.${3:seg_end})"
 		],
-		"description": "when分支"
+		"description": "校验码"
+	},
+
+	"ByteSize": {
+		"scope": "etl",
+		"prefix": "ByteSize",
+		"body": [
+			"ByteSize(this.${1:seg})"
+		],
+		"description": "字节长度"
+	},
+
+	"autovalue": {
+		"scope": "etl",
+		"prefix": "autovalue",
+		"body": [
+			"autovalue: "
+		],
+		"description": "自动赋值"
 	},
 
 	"run": {
