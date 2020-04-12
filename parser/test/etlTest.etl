@@ -1,8 +1,12 @@
 
-using "./adsf/sdf.etl"
-using '../adsf.etl'
-using ""
-using "./etlTest copy.etl"
+using "./adsf/sdf.etl" as f
+using '../adsf.etl' as f
+using "" as pkg
+using "./etlTest copy.etl" as a
+
+using "other/etlTestOther.etl" as other
+
+using "./other/demo.lua" as demo
 
 <%
     //注释是这样的
@@ -63,8 +67,8 @@ using "./etlTest copy.etl"
 %>
 
 
-using "./adsf/sdf.etl"
-using '../adsf.etl'
+using "./adsf/sdf.etl" as dd
+using '../adsf.etl' as s2
 
 <%lua
     --%>

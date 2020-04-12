@@ -33,8 +33,8 @@ using "../adsf.etl"
             segment seg_2 {}
             segment seg3 { 
                 parser: 'int8', 
-                autovalue: checkcode('sum8', this.seg1, this.seg4),
-                repeated: bytesize(this.seg9),
+                autovalue: CheckCode('sum8', this.seg1, this.seg4),
+                repeated: ByteSize(this.seg9),
                 autovalue: 0x98AF
             }
             segment seg4 { parser: 'int8' }

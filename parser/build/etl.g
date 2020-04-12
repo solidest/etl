@@ -52,6 +52,14 @@
                 "return 'USING'"
             ],
             [
+                "as",
+                "return 'AS'"
+            ],
+            [
+                "[a-zA-Z_][a-zA-Z0-9_]*",
+                "return 'ID'"
+            ],
+            [
                 "<%lua",
                 "this.pushState('lua'); return 'BLOCK_BEGIN_LUA'"
             ],
@@ -96,8 +104,8 @@
         ],
         "etl_element": [
             [
-                "USING str",
-                "$$ = newUsing($str)"
+                "USING str AS ID",
+                "$$ = newUsing($str, $ID)"
             ],
             [
                 "block",
@@ -107,29 +115,29 @@
         "block": [
             [
                 "BLOCK_BEGIN_LUA block_body BLOCK_END",
-                "$$ = newBlock('block_lua', $block_body, @1.startOffset+5, @3.endOffset-2);"
+                "$$ = newBlock('block_lua', @1.startOffset+5, @3.endOffset-2);"
             ],
             [
                 "BLOCK_BEGIN_LUA BLOCK_END",
-                "$$ = newBlock('block_lua', null, @1.startOffset+5, @2.endOffset-2);"
+                "$$ = newBlock('block_lua', @1.startOffset+5, @2.endOffset-2);"
             ],
             [
                 "BLOCK_BEGIN_ETL block_body BLOCK_END",
-                "$$ = newBlock('block_etx', null, @1.startOffset+2, @3.endOffset-2);"
+                "$$ = newBlock('block_etx', @1.startOffset+2, @3.endOffset-2);"
             ],
             [
                 "BLOCK_BEGIN_ETL BLOCK_END",
-                "$$ = newBlock('block_etx', null, @1.startOffset+2, @2.endOffset-2);"
+                "$$ = newBlock('block_etx', @1.startOffset+2, @2.endOffset-2);"
             ]
         ],
         "block_body": [
             [
                 "str",
-                "$$ = newList(getRef(yytext))"
+                ""
             ],
             [
                 "block_body str",
-                "$$ = joinList($block_body, getRef(yytext))"
+                ""
             ]
         ],
         "str": [
@@ -143,5 +151,5 @@
             ]
         ]
     },
-    "moduleInclude": "\n\n    function newBlock(type, refs, from, to) {\n      return { kind: type, refs: refs, from: from, to: to };\n    }\n\n    function newUsing(str) {\n      return { kind: 'using', ref: eval(str) };\n    }\n\n    function newList(item) {\n      return item ? [item] : [];\n    }\n\n    function joinList(list, item) {\n      if(list && item) {\n        list.push(item);\n      }\n      return list;\n    }\n\n    function getRef(str) {\n      let s = eval(str);\n      if(s && s.endsWith(\".lua\")) {\n        return s;\n      }\n      return null;\n    }\n"
+    "moduleInclude": "\n\n    function newBlock(type, from, to) {\n      return { kind: type, from: from, to: to };\n    }\n\n    function newUsing(str, id) {\n      return { kind: 'using', ref: eval(str), pkg: id };\n    }\n\n    function newList(item) {\n      return item ? [item] : [];\n    }\n\n    function joinList(list, item) {\n      if(list && item) {\n        list.push(item);\n      }\n      return list;\n    }\n\n    function getRef(str) {\n      let s = eval(str);\n      if(s && s.endsWith(\".lua\")) {\n        return s;\n      }\n      return null;\n    }\n"
 }

@@ -24,10 +24,10 @@ function getEtlAst(proj_path, src_path, refs) {
   }
 
   let text = fs.readFileSync(src_apath, "utf8");
-  let astlist = etlParser.parse(text);
+  let el_list = etlParser.parse(text);
   let newContent = text.split('\n').map(line => ' '.repeat(line.length)).join('\n');
 
-  for (let a of astlist) {
+  for (let a of el_list) {
     if (a.kind === 'block_etx' || a.kind === 'block_lua') {
       let script = newContent.slice(0, a.from) + text.slice(a.from, a.to) + newContent.slice(a.to);
       if (a.kind === 'block_lua') {
@@ -35,86 +35,80 @@ function getEtlAst(proj_path, src_path, refs) {
       } else if (a.kind === 'block_etx') {
         ast.script_etx = etxParser.parse(script);
       }
+    } else if (a.kind === 'using') {  //添加引用的文件到refs里
+      let adir = path.dirname(src_apath);
+      refs.push(path.resolve(adir, a.ref));
     }
   }
-
-  getRefs(src_apath, astlist, refs);
   return ast;
 }
 
-//添加引用的文件到refs里
-function getRefs(src_apath, astlist, refs) {
-  let apath = path.dirname(src_apath);
-  for (let a of astlist) {
-    if (a.kind === 'block_lua') {
-      if (a.refs) {
-        for (let ref of a.refs) {
-          try {
-            refs.push(path.resolve(apath, ref))
-          } catch (error) {
-            console.log(error)
-          }
-        }
-      }
-    } else if (a.kind === 'using') {
-      refs.push(path.resolve(apath, a.ref));
-    }
+//构建执行代码的 ast
+function getSrcAst(kind, proj_path, src_path) {
+  let src_apath = path.isAbsolute(src_path) ? src_path : path.resolve(src_path);
+  let proj_apath = path.isAbsolute(proj_path) ? proj_path : path.resolve(proj_path);
+  let src_rpath = path.relative(proj_apath, src_apath);
+  if(src_rpath.startsWith('.')) {
+    throw new Error(`无法解析文件"${src_path}"`);
   }
-  return refs;
+
+  let text = fs.readFileSync(src_apath, "utf8");
+  return {
+    kind: kind,
+    apath_src: src_apath,
+    rpath_src: src_rpath,
+    script: text
+  }
 }
 
-//解析引用到的文件
-function getRefAstList(proj_path, astlist, refs) {
+//构建so文件的 ast
+function getBinAst(proj_path, src_path) {
+  let src_apath = path.isAbsolute(src_path) ? src_path : path.resolve(src_path);
+  let proj_apath = path.isAbsolute(proj_path) ? proj_path : path.resolve(proj_path);
+  let src_rpath = path.relative(proj_apath, src_apath);
+  if(src_rpath.startsWith('.')) {
+    throw new Error(`无法解析文件"${src_path}"`);
+  }
+
+  let buf = fs.readFileSync(src_apath);
+  return {
+    kind: 'so',
+    apath_src: src_apath,
+    rpath_src: src_rpath,
+    bin: buf.toString('base64')
+  }
+}
+
+//循环解析所有引用到的文件
+function getRefAstList(proj_path, asts, refs) {
   if (!refs || refs.length === 0) {
     return;
   }
 
   for (let apath_ref of refs) {
-    let parsed = astlist.find(it => it.apath_src === apath_ref);
+    let parsed = asts.find(it => it.apath_src === apath_ref);
     if (parsed || !fs.existsSync(apath_ref)) {
       continue;
     }
-    if (apath_ref.endsWith('.etl')) {
-      getRunAstList(proj_path, apath_ref, astlist);
-    } else if (apath_ref.endsWith('.lua')) {
-      getRunLuaList(proj_path, apath_ref, astlist);
+    let ext = path.extname(apath_ref);
+    if (ext === '.etl') {
+      getRunAstList(proj_path, apath_ref, asts);
+    } else if(ext === '.lua' || ext === '.py') {
+      let ast = getSrcAst(ext.substring(1), proj_path, apath_ref);
+      asts.push(ast);
+    } else if ( ext === '.so') {
+      let ast = getBinAst(proj_path, apath_ref);
+      asts.push(ast);
     }
   }
 }
 
-//构建执行 lua 的 ast
-function getRunLuaList(proj_path, src_path, astlist) {
-
-  let src_apath = path.isAbsolute(src_path) ? src_path : path.resolve(src_path);
-  let proj_apath = path.isAbsolute(proj_path) ? proj_path : path.resolve(proj_path);
-  let src_rpath = path.relative(proj_apath, src_apath);
-  let text = fs.readFileSync(src_apath, "utf8");
-
-  if(src_rpath.startsWith('.')) {
-    throw new Error(`无法解析文件"${src_path}"`);
-  }
-
-  let ast = {
-    kind: 'lua',
-    apath_src: src_apath,
-    rpath_src: src_rpath,
-    script_lua: text
-  }
-  let asts = astlist || [];
-  asts.push(ast);
-
-  //解析引用
-  let refs = [];
-  getRefs(src_apath, etlParser.parse('<%lua\n' + text + '\n%>'), refs);
-  getRefAstList(proj_path, asts, refs);
-  return asts;
-}
 
 //构建完整的运行时ast
-function getRunAstList(proj_path, src_path, astlist) {
+function getRunAstList(proj_path, src_path, asts) {
   let refs = [];
   let ast = getEtlAst(proj_path, src_path, refs);
-  let asts = astlist || [];
+  asts = asts || [];
   asts.push(ast);
   getRefAstList(proj_path, asts, refs);
   return asts;

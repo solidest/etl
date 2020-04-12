@@ -51,6 +51,14 @@
             "return 'USING'"
         ],
         [
+            "as",
+            "return 'AS'"
+        ],
+        [
+            "[a-zA-Z_][a-zA-Z0-9_]*",
+            "return 'ID'"
+        ],
+        [
             "<%lua",
             "this.pushState('lua'); return 'BLOCK_BEGIN_LUA'"
         ],

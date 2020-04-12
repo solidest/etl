@@ -1,0 +1,12 @@
+using "./other/demo.lua" as demo
+
+<%
+    //注释是这样的
+    /*
+        这是多行注释///
+        *** 多行注释
+    */
+    protocol a {
+        
+    }
+%>

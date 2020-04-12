@@ -14,6 +14,8 @@ let lex_main = {
     [["*"], "\\\"([^\\\\\\n\"]|\\\\.)*\\\"", "return 'STRING_TRIPLE'"],
     [["*"], "'([^\\\\\\n']|\\\\.)*'", "return 'STRING_SINGLE'"],
     ["using", "return 'USING'"],
+    ["as", "return 'AS'"],
+    ["[a-zA-Z_][a-zA-Z0-9_]*", "return 'ID'"],
     ["<%lua", "this.pushState('lua'); return 'BLOCK_BEGIN_LUA'"],
     ["<%", "this.pushState('etl'); return 'BLOCK_BEGIN_ETL'"],
     [["lua", "etl"], "%>", "this.popState(); return 'BLOCK_END'"],
@@ -30,20 +32,20 @@ let bnf_main = {
   ],
 
   etl_element: [
-    ["USING str", "$$ = newUsing($str)"],
+    ["USING str AS ID", "$$ = newUsing($str, $ID)"],
     ["block", "$$ = $block"],
   ],
 
   block: [
-    ["BLOCK_BEGIN_LUA block_body BLOCK_END", "$$ = newBlock('block_lua', $block_body, @1.startOffset+5, @3.endOffset-2);"],
-    ["BLOCK_BEGIN_LUA BLOCK_END", "$$ = newBlock('block_lua', null, @1.startOffset+5, @2.endOffset-2);"],
-    ["BLOCK_BEGIN_ETL block_body BLOCK_END", "$$ = newBlock('block_etx', null, @1.startOffset+2, @3.endOffset-2);"],
-    ["BLOCK_BEGIN_ETL BLOCK_END", "$$ = newBlock('block_etx', null, @1.startOffset+2, @2.endOffset-2);"],
+    ["BLOCK_BEGIN_LUA block_body BLOCK_END", "$$ = newBlock('block_lua', @1.startOffset+5, @3.endOffset-2);"],
+    ["BLOCK_BEGIN_LUA BLOCK_END", "$$ = newBlock('block_lua', @1.startOffset+5, @2.endOffset-2);"],
+    ["BLOCK_BEGIN_ETL block_body BLOCK_END", "$$ = newBlock('block_etx', @1.startOffset+2, @3.endOffset-2);"],
+    ["BLOCK_BEGIN_ETL BLOCK_END", "$$ = newBlock('block_etx', @1.startOffset+2, @2.endOffset-2);"],
   ],
 
   block_body: [
-    ["str", "$$ = newList(getRef(yytext))"],
-    ["block_body str", "$$ = joinList($block_body, getRef(yytext))"]
+    ["str", ""],
+    ["block_body str", ""]
   ],
 
   str: [
@@ -54,12 +56,12 @@ let bnf_main = {
 
 let include_main = `
 
-    function newBlock(type, refs, from, to) {
-      return { kind: type, refs: refs, from: from, to: to };
+    function newBlock(type, from, to) {
+      return { kind: type, from: from, to: to };
     }
 
-    function newUsing(str) {
-      return { kind: 'using', ref: eval(str) };
+    function newUsing(str, id) {
+      return { kind: 'using', ref: eval(str), pkg: id };
     }
 
     function newList(item) {

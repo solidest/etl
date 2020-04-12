@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "build:grammar": "tsc -b syntaxes/build -v && node syntaxes/build/build.js",
-    "test:parser": "node parser/build.js && syntax-cli -l ./parser/etl.g --tokenize -f ./parser/etlDemo.etl"
+    "build:parser": "node parser/build.js",
+    "test:parser": "node parser/build.js && syntax-cli -m slr1 -g parser/build/etl.g -o parser/etlParser.js --loc && syntax-cli -m slr1 -g parser/build/etl.g -f parser/test/etlTest.etl --loc"
   },
   "contributes": {
     "languages": [
