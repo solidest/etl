@@ -2,7 +2,12 @@
   "name": "etl",
   "displayName": "Embedded Test Language",
   "description": "ETL tooling for VS Code",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "publisher": "Kiyun",
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/solidest/etl.git"
+  },
   "engines": {
     "vscode": "^1.43.0"
   },
