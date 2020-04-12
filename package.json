@@ -2,9 +2,9 @@
   "name": "etl",
   "displayName": "Embedded Test Language",
   "description": "ETL tooling for VS Code",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "Kiyun",
-  "icon": "https://solidest.github.io/etl/logo.png",
+  "icon": "docs/logo.png",
   "repository": {
       "type": "git",
       "url": "git+https://github.com/solidest/etl.git"
