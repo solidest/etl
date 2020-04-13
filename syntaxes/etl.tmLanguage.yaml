@@ -319,7 +319,7 @@ repository:
             - name: punctuation.accessor.optional.etl
               match: \.
             - name: storage.type.class.etl
-              match: '\b(linking|mapping|binding)\b'
+              match: '\b(linking|mapping|binding|uut|etest)\b'
             - name: meta.object.member.etl meta.object-literal.key.etl
               match: '{{identifier}}'
             - name: meta.object.member.etl meta.object-literal.key.etl
