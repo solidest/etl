@@ -291,7 +291,7 @@ repository:
   element-declaration-patterns:
     patterns:
     - include: '#comment'
-    - match: '\b(udp_server|udp_client|tcp_server|tcp_client|di|do|ad|da|serial_ttl|serial_232|serial_485|serial_422|serial_usb)\b(?=\s+|/[/*])'
+    - match: '\b(udp_server|udp_client|tcp_server|tcp_client|di|do|ad|da|serial_ttl|serial_232|serial_485|serial_422|serial_usb|can)\b(?=\s+|/[/*])'
       captures:
         '0': { name: storage.type.class.etl }
     - match: '{{identifier}}'
