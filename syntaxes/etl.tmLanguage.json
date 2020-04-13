@@ -18,6 +18,90 @@
             "patterns": [
                 {
                     "include": "#protocol-declaration"
+                },
+                {
+                    "include": "#device-declaration"
+                },
+                {
+                    "include": "#topology-declaration"
+                }
+            ]
+        },
+        "topology-declaration": {
+            "name": "meta.module.etl",
+            "begin": "\\b(topology)\\b(?=\\s+|/[/*])",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.module.etl"
+                }
+            },
+            "end": "(?<=\\})",
+            "patterns": [
+                {
+                    "match": "[_$[:alpha:]][_$[:alnum:]]*",
+                    "captures": {
+                        "0": {
+                            "name": "entity.name.type.module.etl"
+                        }
+                    }
+                },
+                {
+                    "include": "#object-literal"
+                }
+            ]
+        },
+        "device-declaration": {
+            "name": "meta.module.etl",
+            "begin": "\\b(device)\\b(?=\\s+|/[/*])",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.module.etl"
+                }
+            },
+            "end": "(?<=\\})",
+            "patterns": [
+                {
+                    "include": "#device-declaration-patterns"
+                }
+            ]
+        },
+        "device-declaration-patterns": {
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "match": "[_$[:alpha:]][_$[:alnum:]]*",
+                    "captures": {
+                        "0": {
+                            "name": "entity.name.type.module.etl"
+                        }
+                    }
+                },
+                {
+                    "include": "#device-body"
+                }
+            ]
+        },
+        "device-body": {
+            "begin": "\\{",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.block.etl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#element-declaration-patterns"
                 }
             ]
         },
@@ -223,6 +307,14 @@
                     "include": "#comment"
                 },
                 {
+                    "match": "\\b(udp_server|udp_client|tcp_server|tcp_client|di|do|ad|da|serial_ttl|serial_232|serial_485|serial_422|serial_usb)\\b(?=\\s+|/[/*])",
+                    "captures": {
+                        "0": {
+                            "name": "storage.type.class.etl"
+                        }
+                    }
+                },
+                {
                     "match": "[_$[:alpha:]][_$[:alnum:]]*",
                     "captures": {
                         "0": {
@@ -265,6 +357,10 @@
                                 {
                                     "name": "punctuation.accessor.optional.etl",
                                     "match": "\\."
+                                },
+                                {
+                                    "name": "storage.type.class.etl",
+                                    "match": "\\b(linking|mapping|binding)\\b"
                                 },
                                 {
                                     "name": "meta.object.member.etl meta.object-literal.key.etl",

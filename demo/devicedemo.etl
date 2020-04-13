@@ -1,0 +1,67 @@
+
+device dev_0 {
+
+    udp_server srv_1 { ip: '127.0.0.1', port: 3000 }
+    tcp_server srv_2 { ip: '127.0.0.1', port: 3000 }
+
+    udp_client clt_1 { ip: '127.0.0.1' }
+    tcp_client clt_2 { ip: '127.0.0.1' }
+
+    serial_ttl s1 { baudrate： 9600 }
+    serial_232 s2 { baudrate： 9600 }
+    serial_422 s3 { baudrate： 9600 }
+    serial_485 s4 { baudrate： 9600 }
+    serial_485 s5 { baudrate： 9600 }
+    serial_usb s6 { baudrate： 9600 }
+
+    di di1 { minv: 3, maxv: 5 }
+    do do1 { minv: 3, maxv: 5 }
+
+    da da1 { ratio: 8 }
+    ad ad1 { ratio: 16 }
+}
+
+device dev_2 {
+
+    tcp_server srv_2 { ip: '127.0.0.1', port: 3000 }
+    udp_client clt_1 { ip: '127.0.0.1' }
+    serial_ttl s1 { baudrate： 9600 }
+
+}
+
+//设备
+device dev_3 {
+
+    udp_server srv_1 { ip: '127.0.0.1', port: 3000 }
+    tcp_client clt_2 { ip: '127.0.0.1' }
+    do do1 { minv: 3, maxv: 5 }
+    ad ad1 { ratio: 16 }
+
+}
+
+//拓扑结构
+topology topo_1 {
+
+    //接口之间的连接
+    link: [
+        [dev_1.srv_1, dev2.srv_1, dev_2.clt_1, dev_3.clt_2, dev_4.clt_1],   //总线
+        [dev_3.srv_1, dev_2.clt_1], //点到点连接
+        [dev_4.srv_1, dev_1.clt_1],
+        [dev_5.s1, dev_6.s2, dev_2.s3], //总线
+        [dev_5.di1, dev_6.do1],
+        [dev_5.ad1, dev_6.da1],
+    ],
+
+    //设备映射
+    mapping: {
+        uut: [dev_1, dev_2],   //被测硬件单元
+        etest: [dev_3, dev_4], //软设备
+    },
+
+    //接口绑定
+    binding: {
+        dev_1.s1: 'com1',
+        dev_2.s1: 'com2@192.168.1.5',
+        dev_2.can_1: 'com2@192.168.1.5:1',
+    }
+}
