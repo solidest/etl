@@ -68,6 +68,19 @@
 		"description": "自动赋值"
 	},
 
+	"udp": {
+		"scope": "etl",
+		"prefix": "udp",
+		"body": [
+			"udp ${1:udp_name} {ip: '${2:0.0.0.0}', port: ${3:8888}}"
+		],
+		"description": "udp接口"
+	},
+
+
+
+
+
 	"run": {
 		"scope": "etl",
 		"prefix": "run",

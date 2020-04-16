@@ -2,7 +2,7 @@
   "name": "etl",
   "displayName": "Embedded Test Language",
   "description": "ETL tooling for VS Code",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "publisher": "Kiyun",
   "icon": "docs/logo.png",
   "repository": {
