@@ -107,9 +107,12 @@
         },
         "protocol-declaration": {
             "name": "meta.module.etl",
-            "begin": "\\b(protocol)\\b(?=\\s+|/[/*])",
+            "begin": "\\b(bitlr|bitrl|)[\\s]*(protocol)\\b(?=\\s+|/[/*])",
             "beginCaptures": {
                 "1": {
+                    "name": "keyword.control.conditional.etl"
+                },
+                "2": {
                     "name": "storage.type.module.etl"
                 }
             },
